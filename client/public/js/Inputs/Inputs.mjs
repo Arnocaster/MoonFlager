@@ -4,7 +4,7 @@ export default class Inputs {
   constructor(){
     this.lastInput= Date.now();
     this.inputs = [];
-    this.actions = [];
+    this.actions = {};
     this.lastActions = [];
     this.addListeners(this.inputs);
   }
@@ -33,6 +33,10 @@ export default class Inputs {
     if(this.inputs.ArrowRight || this.inputs.KeyD){
       actions.push('turnRight');
     }
-    this.actions = actions;
+    if (actions.length>0){
+    this.actions['move'] = actions;
+    return;
+    }
+    delete this.actions['move']
   }
 }

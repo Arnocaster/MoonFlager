@@ -32,4 +32,34 @@ export default class Player extends Entities {
     ctx.fill();
     ctx.stroke();
   }
+
+  move(movment){
+    console.log(this.position);
+      if (movment.includes('moveForward')) {
+        this.position.x = this.position.x + (Math.cos(this.position.angle) * this.position.speed);
+        this.position.y = this.position.y + (Math.sin(this.position.angle) * this.position.speed);
+      }
+      if (movment.includes('moveBackward')) {
+        this.position.x = this.position.x - (Math.cos(this.position.angle) * this.position.speed);
+        this.position.y = this.position.y - (Math.sin(this.position.angle) * this.position.speed);
+      }
+      if (movment.includes('turnLeft')) {
+        this.position.angle -= this.position.speed_rotation;
+      }
+      if (movment.includes('turnRight')) {
+        this.position.angle += this.position.speed_rotation;
+      }
+      if (this.position.x > 400) {
+        this.position.x = 400
+      }
+      if (this.position.y > 400) {
+        this.position.y = 400
+      }
+      if (this.position.x < 0) {
+        this.position.x = 0
+      }
+      if (this.position.y < 0) {
+        this.position.y = 0
+      }
+  }
 }

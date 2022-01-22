@@ -19,8 +19,16 @@ export default class World {
   processActions(){
     //Lit toutes les actions stackées, les applique au monde
     this.actionsBuffer.forEach(player=>{
+      Object.keys(player.data).forEach(actionType =>{
 
-      console.log(this.findPlayerById(player.id), player.data);
+        if (actionType === 'move'){
+          const playerElt = this.findPlayerById(player.id);
+          player.data[actionType].forEach(action =>{
+            playerElt.move(action);
+          });
+        }
+        
+      });
     });
     this.actionsBuffer = [];
     //Reset des actions stackées
@@ -30,7 +38,6 @@ export default class World {
     //Process input player movement.
     this.processActions();
 
-    //setTimeout(() => { this.updateWorld() }, this.settings.refreshRate);
     //!WORLDS OUT
     return this.world
   }
@@ -59,7 +66,23 @@ export default class World {
         this.addPlayer(newPlayer.id,newPlayer);
       }
     });
-  }
+    }
+    //Pour chaque joueur on change les valeurs de la propriété
+    //Liste chaque joueur de l'ancien monde
+    this.world.players.forEach(player =>{
+      //On cherche la nouvelle position du joueur dans le nouveau monde
+      //Postition du nouveau joueur
+      //const newP = newWorld.players.array.find(player => player.id === id);
+      const newP = newWorld.players.find(nPlayer => nPlayer.id === player.id);
+      if(newP){
+        player.position = newP.position;
+        return
+      }
+      console.log("This player cannot be found in the new world");
+      //player.position.x = 50;
+
+      
+    });
   }
 
   addPlayer(id,propreties) {
