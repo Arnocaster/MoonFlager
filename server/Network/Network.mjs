@@ -14,12 +14,15 @@ export default class Network {
       //this.world.addPlayer(socket.io);
       //Stocke la connection dans le serveur pour MAJ dans run
       this.connection_buffer.newPlayers.push(socket.id);
+      this.io.emit('New_Client_Connected',socket.id);
       this.updateConnections();
+      console.log(this.world);
       console.log(`New connection with Id : ${socket.id} and Ip : ${socket.handshake.address}`);
       
       socket.on('disconnect', (reason) => {
         //this.world.removePlayer(socket.io);
         this.connection_buffer.lostPlayers.push(socket.id);
+        this.io.emit('New_Client_Disconnected',socket.id);
         this.updateConnections();
         console.log(`Client disconnected with Id ${socket.id} and IP ${socket.handshake.address} ${reason}`);
       });

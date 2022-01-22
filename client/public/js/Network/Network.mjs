@@ -25,10 +25,12 @@ export default class Network {
 
       this.socket.on('New_Client_Connected',(newId) =>{
         this.connection_buffer.newPlayers.push(newId);
+        console.log('A client is connected');
       });
 
       this.socket.on('New_Client_Disconnected',(newId) =>{
         this.connection_buffer.lostPlayers.push(newId);
+        console.log('A client is Disconnected');
       });
 
 

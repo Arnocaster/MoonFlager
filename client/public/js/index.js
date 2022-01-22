@@ -17,7 +17,7 @@ class app{
 
   update() {
     const buffer = this.network.connection_buffer;
-    console.log("buffer",buffer.lostPlayers);
+    console.log("buffer",buffer.newPlayers,buffer.lostPlayers);
     this.nowWorld.updatePlayers(buffer.newPlayers,buffer.lostPlayers);
     //this.nowWorld.world = this.network.tempWorld;
     const timeStart = Date.now();
