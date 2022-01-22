@@ -44,28 +44,21 @@ export default class World {
     newWorld.players.forEach(newPlayer => {
       //On regare s'il existe déjà dans l'ancien monde
       if(!this.findPlayerById(newPlayer.id)){
-        this.addPlayer(newPlayer.id);
+        this.addPlayer(newPlayer.id,newPlayer);
       }
     });
   }
   }
 
-  // async updatePlayers(newClientsIds,lostClientsIds) {
-  //   if (newClientsIds.length > 0) {
-  //     await newClientsIds.forEach(id => {
-  //       this.addPlayer(id);
-  //     });
-  //   }
-
-  //   if (lostClientsIds.length > 0) {
-  //     await lostClientsIds.forEach(id => {
-  //       this.removePlayer(id);
-  //     });
-  //   }
-  // }
-
-  addPlayer(id) {
+  addPlayer(id,propreties) {
+    //If no propreties => Random player
+    if (!propreties){
     this.world.players.push(new Player(id));
+    return;
+    }
+    this.world.players.push(new Player(id,propreties));
+    //If propreties => New player with propreties
+
     console.log("New Player");
   }
 

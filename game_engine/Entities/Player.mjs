@@ -1,9 +1,10 @@
 import Entities from './Entitie.mjs';
 
 export default class Player extends Entities {
-  constructor(socket) {
+  constructor(id,propreties) {
     super();
-    this.id = socket;
+    this.id = id;
+    if (!propreties){
     this.position = {
       x: parseInt(Math.random() * 400),
       y: parseInt(Math.random() * 400),
@@ -11,7 +12,14 @@ export default class Player extends Entities {
       speed: 1,
       speed_rotation: 0.08
     };
-    this.color = `rgb(${parseInt(Math.random() * 255)}, ${parseInt(Math.random() * 255)},${parseInt(Math.random() * 255)})`
+    this.color = `rgb(${parseInt(Math.random() * 255)}, 
+                      ${parseInt(Math.random() * 255)},
+                      ${parseInt(Math.random() * 255)})`;
+  } else {
+    this.position = propreties.position;
+    this.color = propreties.color;
+  }
+    
 
   }
 
