@@ -2,57 +2,56 @@ import {World} from '../../game_engine/index.mjs'
 
 export default class Network {
   constructor(io){
+    this.io = io;
     this.world = new World; 
-    console.log(this.world);
+    this.socket = null;
     this.connection_buffer = {
       newPlayers: [],
       lostPlayers: [],
       playersInputs: [],
     }
     io.on('connection',(socket)=>{
-      console.log("Connected, starting app");
+      //this.world.addPlayer(socket.io);
+      //Stocke la connection dans le serveur pour MAJ dans run
       this.connection_buffer.newPlayers.push(socket.id);
       this.updateConnections();
-      socket.emit('New_Client_Connected',this.world);
+      console.log(`New connection with Id : ${socket.id} and Ip : ${socket.handshake.address}`);
       
       socket.on('disconnect', (reason) => {
+        //this.world.removePlayer(socket.io);
         this.connection_buffer.lostPlayers.push(socket.id);
+        this.updateConnections();
         console.log(`Client disconnected with Id ${socket.id} and IP ${socket.handshake.address} ${reason}`);
       });
-      
 
-    
-      io.on('ping_response', (res) => {
-        //Here obj = Client_now,Server_now
-        res.Client_end = Date.now();
-        app.lastPing = res;
+      socket.on('player_input', (data) => {
+        console.log('player input',data);
+        world.addInputBuffer(socket.id, data);
       });
-    
-      io.on('world_update', (obj) => {
-        //! For the moment World = Players
-        //console.log(obj);
-        app.players = obj;
+
+      socket.on('ping_request', (Client_req) => {
+        const Server_res = Date.now();
+        this.io.to(socket.id).emit('ping_response', { Client_req, Server_res });
       });
-    })
-   
+    });
+    this.run();
   }
 
   async updateConnections() {
     const newPlayers = this.connection_buffer.newPlayers;
     const lostPlayers = this.connection_buffer.lostPlayers;
-    if (newPlayers.length > 0) {
-      await newPlayers.forEach(id => {
-        this.world.addPlayer(id);
-      });
-      this.connection_buffer.newPlayers = [];
-    }
+    this.world.updatePlayers(newPlayers,lostPlayers);
+    this.io.emit('update_player',[newPlayers,lostPlayers]);
+    this.connection_buffer.newPlayers = [];
+    this.connection_buffer.lostPlayers = [];
+  }
 
-    if (lostPlayers.length > 0) {
-      await lostPlayers.forEach(id => {
-        this.world.removePlayer(id);
-      });
-      this.connection_buffer.lostPlayers = [];
-    }
+  run() {
+    const nowWorld = this.world.updateWorld();
+    
+    //console.log('conn',this.world.world.players);
+    this.io.emit('world_update',nowWorld);
+    setTimeout(()=>{this.run()},16);
   }
 
   send(type,data){

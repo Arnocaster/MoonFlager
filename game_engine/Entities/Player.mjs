@@ -19,8 +19,8 @@ export default class Player extends Entities {
     ctx.beginPath();
     ctx.lineWidth = 1;
     ctx.strokeStyle = "black";
-    ctx.fillStyle = player.color;
-    ctx.arc(player.position.x, player.position.y, 5, 0, 2 * Math.PI, false);
+    ctx.fillStyle = this.color;
+    ctx.arc(this.position.x,this.position.y, 5, 0, 2 * Math.PI, false);
     ctx.fill();
     ctx.stroke();
   }
