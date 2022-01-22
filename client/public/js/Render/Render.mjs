@@ -8,6 +8,15 @@ export default class render{
   }
 
   render(world){
+
+    const getMethods = (obj) => {
+      let properties = new Set()
+      let currentObj = obj
+      do {
+        Object.getOwnPropertyNames(currentObj).map(item => properties.add(item))
+      } while ((currentObj = Object.getPrototypeOf(currentObj)))
+      return [...properties.keys()].filter(item => typeof obj[item] === 'function')
+    }
     const ctx = this.canvas.getContext('2d');
     ctx.clearRect(0, 0, 400, 400);
     //!Render each entities/object of the world
@@ -16,7 +25,8 @@ export default class render{
      Object.keys(world).forEach(element=>{
         const entities = world[element]
         entities.forEach(entitie =>{
-          const pl = new Player;
+          //!GET PLAYER.RENDER();
+          entitie.render(ctx);
           
 
         })
@@ -24,3 +34,5 @@ export default class render{
     }
   }
 }
+
+

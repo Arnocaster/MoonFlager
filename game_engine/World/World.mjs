@@ -30,19 +30,39 @@ export default class World {
     return this.world.players.find(player => player.id === id);
   }
 
-  async updatePlayers(newClientsIds,lostClientsIds) {
-    if (newClientsIds.length > 0) {
-      await newClientsIds.forEach(id => {
-        this.addPlayer(id);
-      });
-    }
+  updatePlayers(newWorld) {
+    if (newWorld.players){
+      //Pour chaque joueur de l'ancien monde
+      this.world.players.forEach(oldPlayer =>{
+        //S'il n'existe plus dans le nouveau monde on le supprime;
+        if (!this.findPlayerById(oldPlayer.id,newWorld.players)){
+          this.removePlayer(oldPlayer.id);
+        }
 
-    if (lostClientsIds.length > 0) {
-      await lostClientsIds.forEach(id => {
-        this.removePlayer(id);
       });
-    }
+    //Pour chaque joueur du nouveau monde
+    newWorld.players.forEach(newPlayer => {
+      //On regare s'il existe déjà dans l'ancien monde
+      if(!this.findPlayerById(newPlayer.id)){
+        this.addPlayer(newPlayer.id);
+      }
+    });
   }
+  }
+
+  // async updatePlayers(newClientsIds,lostClientsIds) {
+  //   if (newClientsIds.length > 0) {
+  //     await newClientsIds.forEach(id => {
+  //       this.addPlayer(id);
+  //     });
+  //   }
+
+  //   if (lostClientsIds.length > 0) {
+  //     await lostClientsIds.forEach(id => {
+  //       this.removePlayer(id);
+  //     });
+  //   }
+  // }
 
   addPlayer(id) {
     this.world.players.push(new Player(id));

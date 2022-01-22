@@ -6,9 +6,10 @@ import {World} from '/game-engine/index.mjs'
 
 class app{
   constructor(){
-    this.nowWorld= new World;
+    this.clientWorld= new World;
     this.refreshRate = 16;
     this.network = new Network();
+    this.network.tempWorld = this.clientWorld;
     this.inputs = new Inputs();
     this.render = new Render();
     
@@ -16,17 +17,13 @@ class app{
   }
 
   update() {
-    const buffer = this.network.connection_buffer;
-    console.log("buffer",buffer.newPlayers,buffer.lostPlayers);
-    this.nowWorld.updatePlayers(buffer.newPlayers,buffer.lostPlayers);
-    //this.nowWorld.world = this.network.tempWorld;
+    this.clientWorld.updatePlayers(this.network.tempWorld);
     const timeStart = Date.now();
     //this.latence();
     this.inputs.inputManager();
-    this.render.render(this.nowWorld.world);
+    this.render.render(this.clientWorld.world);
     let timeEnd = Date.now();
     setInterval(()=>{this.update()},250);
-    
   }
 
 }

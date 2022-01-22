@@ -11,19 +11,11 @@ export default class Network {
       playersInputs: [],
     }
     io.on('connection',(socket)=>{
-      //this.world.addPlayer(socket.io);
-      //Stocke la connection dans le serveur pour MAJ dans run
-      this.connection_buffer.newPlayers.push(socket.id);
-      this.io.emit('New_Client_Connected',socket.id);
-      this.updateConnections();
-      console.log(this.world);
+      this.world.addPlayer(socket.id);
       console.log(`New connection with Id : ${socket.id} and Ip : ${socket.handshake.address}`);
-      
+      console.log('Server world after new connection',this.world.world);
       socket.on('disconnect', (reason) => {
-        //this.world.removePlayer(socket.io);
-        this.connection_buffer.lostPlayers.push(socket.id);
-        this.io.emit('New_Client_Disconnected',socket.id);
-        this.updateConnections();
+        this.world.removePlayer(socket.id);
         console.log(`Client disconnected with Id ${socket.id} and IP ${socket.handshake.address} ${reason}`);
       });
 
@@ -40,21 +32,18 @@ export default class Network {
     this.run();
   }
 
-  async updateConnections() {
-    const newPlayers = this.connection_buffer.newPlayers;
-    const lostPlayers = this.connection_buffer.lostPlayers;
-    this.world.updatePlayers(newPlayers,lostPlayers);
-    this.io.emit('update_player',[newPlayers,lostPlayers]);
-    this.connection_buffer.newPlayers = [];
-    this.connection_buffer.lostPlayers = [];
-  }
+  // async updateConnections() {
+  //   const newPlayers = this.connection_buffer.newPlayers;
+  //   const lostPlayers = this.connection_buffer.lostPlayers;
+  //   this.world.updatePlayers(newPlayers,lostPlayers);
+  //   this.connection_buffer.newPlayers = [];
+  //   this.connection_buffer.lostPlayers = [];
+  // }
 
-  run() {
-    const nowWorld = this.world.updateWorld();
-    
-    //console.log('conn',this.world.world.players);
+  async run() {
+    const nowWorld = await this.world.updateWorld();
     this.io.emit('world_update',nowWorld);
-    setTimeout(()=>{this.run()},16);
+    setTimeout(()=>{this.run()},250);
   }
 
   send(type,data){

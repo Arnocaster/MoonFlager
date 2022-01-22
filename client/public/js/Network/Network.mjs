@@ -11,10 +11,9 @@ export default class Network {
     this.latencyRate = 100;
     this.latencyHistory  = 2000;
     this.lastPing= null;
-    this.tempWorld = null;
-    //Socket.io Managment => Maybe a module later
+    this.tempWorld = {};
+
     this.socket = io('http://109.14.79.91:3003');
-    // const socket = this.io("http://109.14.79.91:3003");
     // console.log("Connected, starting app");
     if (this.socket) {
       this.socket.on('ping_response', (res) => {
@@ -23,20 +22,30 @@ export default class Network {
         this.lastPing = res;
       });
 
-      this.socket.on('New_Client_Connected',(newId) =>{
-        this.connection_buffer.newPlayers.push(newId);
-        console.log('A client is connected');
-      });
+      // this.socket.on('New_Client_Connected',(newId) =>{
+      //   this.connection_buffer.newPlayers.push(newId);
+      //   console.log('A client is connected');
+      // });
 
-      this.socket.on('New_Client_Disconnected',(newId) =>{
-        this.connection_buffer.lostPlayers.push(newId);
-        console.log('A client is Disconnected');
-      });
+      // this.socket.on('New_Client_Disconnected',(newId) =>{
+      //   this.connection_buffer.lostPlayers.push(newId);
+      //   console.log('A client is Disconnected');
+      // });
+      
 
 
       this.socket.on('world_update', (obj) => {
         this.tempWorld = obj;
       });
+    }
+  }
+
+  resetBuffer(){
+    //PAS JOLI JOLI
+    this.connection_buffer = {
+      newPlayers: [],
+      lostPlayers: [],
+      playersInputs: [],
     }
   }
 
