@@ -13,17 +13,16 @@ class app{
     this.inputs = new Inputs();
     this.render = new Render();
     
-    this.update();
+    setInterval(()=>{this.update();},this.refreshRate);
   }
 
   update() {
     this.clientWorld.updatePlayers(this.network.tempWorld);
     const timeStart = Date.now();
-    //this.latence();
+    this.network.latence();
     this.inputs.inputManager();
-    this.render.render(this.clientWorld.world);
+    this.render.render(this.clientWorld.world,this.network.latency);
     let timeEnd = Date.now();
-    setInterval(()=>{this.update()},250);
   }
 
 }

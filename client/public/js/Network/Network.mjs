@@ -2,37 +2,33 @@ import {io} from '../socket.io.esm.min.js'
 
 export default class Network {
   constructor() {
-    this.connection_buffer = {
-      newPlayers: [],
-      lostPlayers: [],
-      playersInputs: [],
-    }
     this.latency = [];
+    this.lastPing = {ping_req : Date.now()};
     this.latencyRate = 100;
     this.latencyHistory  = 2000;
-    this.lastPing= null;
+    this.debug_slowClient = false;
+
+    this.timeOffset = null;
+
     this.tempWorld = {};
 
     this.socket = io('http://109.14.79.91:3003');
-    // console.log("Connected, starting app");
+
+    
     if (this.socket) {
+      this.socket.on('server_time',(serverTime)=>{
+        this.timeOffset = (serverTime - Date.now);
+        console.log(this.timeOffset);
+      })
       this.socket.on('ping_response', (res) => {
-        //Here obj = Client_now,Server_now
-        res.Client_end = Date.now();
-        this.lastPing = res;
+        res.ping_end = Date.now();
+        const ping_req = res.ping_res - res.ping_req;
+        const ping_res = res.ping_end - res.ping_res;
+        this.latency.unshift([ping_req,ping_res]);
+        if (this.latency.length > (this.latencyHistory/this.latencyRate)){
+          this.latency.pop();
+        }
       });
-
-      // this.socket.on('New_Client_Connected',(newId) =>{
-      //   this.connection_buffer.newPlayers.push(newId);
-      //   console.log('A client is connected');
-      // });
-
-      // this.socket.on('New_Client_Disconnected',(newId) =>{
-      //   this.connection_buffer.lostPlayers.push(newId);
-      //   console.log('A client is Disconnected');
-      // });
-      
-
 
       this.socket.on('world_update', (obj) => {
         this.tempWorld = obj;
@@ -40,37 +36,8 @@ export default class Network {
     }
   }
 
-  resetBuffer(){
-    //PAS JOLI JOLI
-    this.connection_buffer = {
-      newPlayers: [],
-      lostPlayers: [],
-      playersInputs: [],
-    }
-  }
-
-
-  latence() {
-    const Client_req = Date.now();
-    if (Client_req - app.lastPing.Client_req > app.latencyRate) {
-      if (app.debug_slowClient){
-          //Fake ping for local test
-        setTimeout(()=>{app.socket.volatile.emit('ping_request', Client_req);},app.debug_pingMs);
-        return;
-      } else {
-      app.socket.volatile.emit('ping_request', Client_req);
-      }
-    }
-
-    if (app.lastPing) {
-      const lastPing = app.lastPing;
-      const req_ping = lastPing.Server_res - lastPing.Client_req;
-      const res_ping = lastPing.Client_end - lastPing.Server_res;
-      const ping = [req_ping, res_ping];
-      app.latency.unshift(ping);
-       if (app.latency.length > app.latencyHistory/app.latencyRate) {
-         app.latency.pop();
-       }
-    }
-  }
+  async latence() {
+   //console.log(this.lastPing);
+   this.socket.emit('ping_request',Date.now());
+  } 
 }

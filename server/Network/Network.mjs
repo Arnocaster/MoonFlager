@@ -12,8 +12,10 @@ export default class Network {
     }
     io.on('connection',(socket)=>{
       this.world.addPlayer(socket.id);
+      this.io.to(socket.id).emit('server_time',Date.now());
       console.log(`New connection with Id : ${socket.id} and Ip : ${socket.handshake.address}`);
       console.log('Server world after new connection',this.world.world);
+
       socket.on('disconnect', (reason) => {
         this.world.removePlayer(socket.id);
         console.log(`Client disconnected with Id ${socket.id} and IP ${socket.handshake.address} ${reason}`);
@@ -24,9 +26,8 @@ export default class Network {
         world.addInputBuffer(socket.id, data);
       });
 
-      socket.on('ping_request', (Client_req) => {
-        const Server_res = Date.now();
-        this.io.to(socket.id).emit('ping_response', { Client_req, Server_res });
+      socket.on('ping_request', (ping_req) => {
+        this.io.to(socket.id).emit('ping_response', {ping_req,ping_res : Date.now()});
       });
     });
     this.run();
