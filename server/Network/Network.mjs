@@ -5,11 +5,6 @@ export default class Network {
     this.io = io;
     this.world = new World; 
     this.socket = null;
-    this.connection_buffer = {
-      newPlayers: [],
-      lostPlayers: [],
-      playersInputs: [],
-    }
     io.on('connection',(socket)=>{
       this.world.addPlayer(socket.id);
       this.io.to(socket.id).emit('server_time',Date.now());
@@ -22,8 +17,7 @@ export default class Network {
       });
 
       socket.on('player_input', (data) => {
-        console.log('player input',data);
-        world.addInputBuffer(socket.id, data);
+        this.world.actionsBuffer.push({id : socket.id, data});
       });
 
       socket.on('ping_request', (ping_req) => {

@@ -9,6 +9,7 @@ class app{
     this.clientWorld= new World;
     this.refreshRate = 16;
     this.network = new Network();
+    //PAS JOLI
     this.network.tempWorld = this.clientWorld;
     this.inputs = new Inputs();
     this.render = new Render();
@@ -17,10 +18,13 @@ class app{
   }
 
   update() {
-    this.clientWorld.updatePlayers(this.network.tempWorld);
     const timeStart = Date.now();
+    this.clientWorld.updatePlayers(this.network.tempWorld);
     this.network.latence();
     this.inputs.inputManager();
+    if (this.inputs.actions.length > 0){
+    this.network.send('player_input',this.inputs.actions);
+    }
     this.render.render(this.clientWorld.world,this.network.latency);
     let timeEnd = Date.now();
   }

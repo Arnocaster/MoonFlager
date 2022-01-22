@@ -8,18 +8,13 @@ export default class Network {
     this.latencyHistory  = 2000;
     this.debug_slowClient = false;
 
-    this.timeOffset = null;
-
     this.tempWorld = {};
 
     this.socket = io('http://109.14.79.91:3003');
 
     
     if (this.socket) {
-      this.socket.on('server_time',(serverTime)=>{
-        this.timeOffset = (serverTime - Date.now);
-        console.log(this.timeOffset);
-      })
+     
       this.socket.on('ping_response', (res) => {
         res.ping_end = Date.now();
         const ping_req = res.ping_res - res.ping_req;
@@ -30,14 +25,22 @@ export default class Network {
         }
       });
 
-      this.socket.on('world_update', (obj) => {
-        this.tempWorld = obj;
+      this.socket.on('world_update', (world) => {
+        this.tempWorld = world;
       });
     }
   }
 
-  async latence() {
-   //console.log(this.lastPing);
+  send(type,data){
+    this.socket.emit(type,data);
+  }
+
+  sendInputs(inputs){
+    this.socket.emit('player_inputs',inputs);
+  }
+
+  latence() {
    this.socket.emit('ping_request',Date.now());
-  } 
+  }
+
 }

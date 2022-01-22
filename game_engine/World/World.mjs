@@ -12,12 +12,24 @@ export default class World {
       height: 400,
       refreshRate: 15,
     }
-    this.updateWorld();
+
+    this.actionsBuffer = [];
+  }
+
+  processActions(){
+    //Lit toutes les actions stackées, les applique au monde
+    this.actionsBuffer.forEach(player=>{
+
+      console.log(this.findPlayerById(player.id), player.data);
+    });
+    this.actionsBuffer = [];
+    //Reset des actions stackées
   }
 
   updateWorld() {
     //Process input player movement.
-    
+    this.processActions();
+
     //setTimeout(() => { this.updateWorld() }, this.settings.refreshRate);
     //!WORLDS OUT
     return this.world
@@ -51,14 +63,11 @@ export default class World {
   }
 
   addPlayer(id,propreties) {
-    //If no propreties => Random player
     if (!propreties){
     this.world.players.push(new Player(id));
     return;
     }
     this.world.players.push(new Player(id,propreties));
-    //If propreties => New player with propreties
-
     console.log("New Player");
   }
 
