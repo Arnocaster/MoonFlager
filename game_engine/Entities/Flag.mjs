@@ -11,7 +11,6 @@ export default class Flag extends Entities {
     this.color = `rgb(${parseInt(Math.random() * 255)}, 
     ${parseInt(Math.random() * 255)},
     ${parseInt(Math.random() * 255)})`;
-    this.add(this);
   }
 
   use() {

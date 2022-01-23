@@ -39,9 +39,20 @@ export default class World {
     console.error('You need an Id to delete a player');
   }
 
-  updateWorld(){
+  updateWorld(newWorld){
+    const oldWorld = this.entities.get();
+    if (newWorld){
+      Object.keys(newWorld).forEach(type =>{
+        newWorld[type].forEach(entity => {
+          const thisClass = new this.entities.classes[type];
+          this.entities.add(thisClass,entity);
+          console.log(this.entities.get());
+        });
+      });
+      
+    }
     //Update each entitie;
-    return this.entities;
+    return this.entities.get();
   }
 
 }

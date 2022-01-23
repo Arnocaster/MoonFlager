@@ -20,7 +20,6 @@ export default class Player extends Entities {
       this.color = propreties.color;
     }
     //this.equipped = new Flag(world,this.id,this.position);
-    this.add(this);
   }
 
   use() {

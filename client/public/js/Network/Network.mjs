@@ -8,7 +8,7 @@ export default class Network {
     this.latencyHistory  = 2000;
     this.debug_slowClient = false;
 
-    this.tempWorld = [];
+    this.tempWorld = null;
 
     this.socket = io('http://109.14.79.91:3003');
 
@@ -25,19 +25,17 @@ export default class Network {
         }
       });
       //! NEED BUFFER WORLD BEFORE UPDATE
-      this.socket.on('world_update', (world) => {
-        console.log("netCli",world);
-        if ( Array.isArray(this.tempWorld)){
-        this.tempWorld.push(world);
-        }
+      this.socket.on('world_update', (newWorld) => {
+        this.tempWorld = newWorld;
       });
     }
   }
   getTempWorld(){
-    console.log(this.tempWorld.flags);
+    if (this.tempWorld !== null && Object.keys(this.tempWorld).length > 0){
     const tempWorld = this.tempWorld;
     this.tempWorld = [];
     return tempWorld
+    }
   }
 
 
@@ -49,8 +47,8 @@ export default class Network {
     //this.socket.emit('player_inputs',inputs);
   }
 
-  latence() {
-   //this.socket.emit('ping_request',Date.now());
+  ping() {
+   this.socket.emit('ping_request',Date.now());
   }
 
 }
