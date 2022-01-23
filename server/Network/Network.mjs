@@ -5,11 +5,12 @@ export default class Network {
     this.io = io;
     this.world = new World; 
     this.socket = null;
+
     io.on('connection',(socket)=>{
       this.world.addPlayer(socket.id);
       this.io.to(socket.id).emit('server_time',Date.now());
       console.log(`New connection with Id : ${socket.id} and Ip : ${socket.handshake.address}`);
-      console.log('Server world after new connection',this.world.world);
+      console.log('Server world after new connection',this.world.entities);
 
       socket.on('disconnect', (reason) => {
         this.world.removePlayer(socket.id);
@@ -24,15 +25,13 @@ export default class Network {
         this.io.to(socket.id).emit('ping_response', {ping_req,ping_res : Date.now()});
       });
     });
-    setInterval(()=>{this.run();},5) 
+    let start = Date.now();
+    setInterval(()=>{this.run(start);},250);
   }
 
-  async run() {
-    const nowWorld = await this.world.updateWorld();
+  run(start) {
+    const nowWorld = this.world.updateWorld(start);
     this.io.emit('world_update',nowWorld);
-  }
 
-  send(type,data){
-    this.socket.emit(type,data);
   }
 }

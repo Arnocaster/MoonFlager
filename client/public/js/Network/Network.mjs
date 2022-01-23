@@ -8,7 +8,7 @@ export default class Network {
     this.latencyHistory  = 2000;
     this.debug_slowClient = false;
 
-    this.tempWorld = {};
+    this.tempWorld = [];
 
     this.socket = io('http://109.14.79.91:3003');
 
@@ -24,23 +24,33 @@ export default class Network {
           this.latency.pop();
         }
       });
-
+      //! NEED BUFFER WORLD BEFORE UPDATE
       this.socket.on('world_update', (world) => {
-        this.tempWorld = world;
+        console.log("netCli",world);
+        if ( Array.isArray(this.tempWorld)){
+        this.tempWorld.push(world);
+        }
       });
     }
   }
+  getTempWorld(){
+    console.log(this.tempWorld.flags);
+    const tempWorld = this.tempWorld;
+    this.tempWorld = [];
+    return tempWorld
+  }
+
 
   send(type,data){
     this.socket.emit(type,data);
   }
 
   sendInputs(inputs){
-    this.socket.emit('player_inputs',inputs);
+    //this.socket.emit('player_inputs',inputs);
   }
 
   latence() {
-   this.socket.emit('ping_request',Date.now());
+   //this.socket.emit('ping_request',Date.now());
   }
 
 }

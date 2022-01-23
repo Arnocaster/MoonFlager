@@ -4,7 +4,7 @@ export default class Inputs {
   constructor(){
     this.lastInput= Date.now();
     this.inputs = [];
-    this.actions = {};
+    this.actions = [];
     this.lastActions = [];
     this.addListeners(this.inputs);
   }
@@ -17,6 +17,11 @@ export default class Inputs {
       document.addEventListener('keyup', function (e) {
           inputs[e.code] = false;
       });
+  }
+  getActions(){
+    const actions = this.actions;
+    this.actions = [];
+    return actions;
   }
 
   inputManager (){
@@ -33,10 +38,12 @@ export default class Inputs {
     if(this.inputs.ArrowRight || this.inputs.KeyD){
       actions.push('turnRight');
     }
+    if (this.inputs.KeyE){
+      actions.push('use');
+    }
     if (actions.length>0){
-    this.actions['move'] = actions;
+    this.actions.push(actions);
     return;
     }
-    delete this.actions['move']
   }
 }

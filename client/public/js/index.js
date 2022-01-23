@@ -17,14 +17,24 @@ class app {
     setInterval(() => { this.update(); }, this.refreshRate);
   }
 
-  update() {
+  async update() {
 
     const timeStart = Date.now();
-    this.clientWorld.updatePlayers(this.network.tempWorld);
-    if (Object.keys(this.inputs.actions).length > 0) {
-      this.network.send('player_input', this.inputs.actions);
-    }
+
     this.inputs.inputManager();
+    const actions = this.inputs.getActions();
+    if (actions.length > 0) {
+      this.network.send('player_input', actions);
+    }
+    if (this.network.tempWorld.length > 0){
+      console.log('new world reveived');
+    const tempWorld = await this.network.getTempWorld(); 
+      tempWorld.forEach(world => {
+      this.clientWorld.updatePlayers(world);
+    });
+    }
+    console.log(this.clientWorld,this.clientWorld.players);
+    this.network.tempWorld = [];
     this.network.latence();
     this.render.render(this.clientWorld.world, this.network.latency);
     let timeEnd = Date.now();

@@ -34,13 +34,14 @@ export default class render {
 
     //!Render each entities/object of the world
     if (world) {
-      Object.keys(world).forEach(element => {
-        const entities = world[element]
-        entities.forEach(entitie => {
-          //!GET Entitie.RENDER();
-          entitie.render(ctx);
-        })
-      });
+       console.log(world.en);
+      // Object.keys(world).forEach(element => {
+      //   const entities = world[element]
+      //   entities.forEach(entitie => {
+      //     //!GET Entitie.RENDER();
+      //     entitie.render(ctx);
+      //   })
+      // });
     }
   }
 }

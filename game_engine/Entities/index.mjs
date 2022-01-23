@@ -1,4 +1,5 @@
 import Player from './Player.mjs'
-import Entitie from './Entitie.mjs'
+import Entities from './Entities.mjs'
+import Flag from './Flag.mjs'
 
-export {Entitie,Player}
+export {Entities,Player,Flag}
