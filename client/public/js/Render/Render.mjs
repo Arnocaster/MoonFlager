@@ -39,7 +39,7 @@ export default class render {
          entities.forEach(entitie => {
            console.log(entitie);
            //!GET Entitie.RENDER();
-      //     entitie.render(ctx);
+           entitie.render(ctx);
          })
        });
     }

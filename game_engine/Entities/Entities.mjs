@@ -40,7 +40,7 @@ export default class Entities {
       const index = this.#Entities[entityType].find(entity => entity.id === id);
       if (index) {
         this.#Entities[entityType].splice(index, 1);
-        console.log(`New entitie ${entityType} added`);
+        console.log(`Entitie ${entityType} removed`);
       }
     });
   }

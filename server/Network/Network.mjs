@@ -4,7 +4,7 @@ import {World} from '../../game_engine/index.mjs'
 export default class Network {
   constructor(io){
     this.io = io;
-    this.world = new World; 
+    this.world = new World(); 
     this.socket = null;
 
     io.on('connection',(socket)=>{

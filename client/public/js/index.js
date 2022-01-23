@@ -6,9 +6,11 @@ import { World } from '/game-engine/index.mjs'
 
 class app {
   constructor() {
-    this.world = new World;
     this.refreshRate = 5;
     this.network = new Network();
+    const id = Object.assign({},this.network.socket);
+    console.log(this.network.getId());
+    this.world = new World(this.network.socket.id);
     this.inputs = new Inputs();
     this.render = new Render();
 
@@ -17,6 +19,7 @@ class app {
 
   async update() {
     const newWorld = this.network.getTempWorld();
+    //console.log(this.world);
     this.world.updateWorld(newWorld);
     this.network.ping();
     //this.render.render(this.world,this.network.latency);
