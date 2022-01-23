@@ -3,8 +3,8 @@ import { Player } from "../index.mjs";
 export default class World {
   constructor() {
     this.world = {
-      players : [],
-      flags :[]
+      players: [],
+      flags: []
     }
 
     this.settings = {
@@ -16,22 +16,29 @@ export default class World {
     this.actionsBuffer = [];
   }
 
-  processActions(){
+  processActions() {
+    const start = Date.now();
+    const move = ['moveForward', 'moveBackward', 'turnLeft', 'turnRight'];
     //Lit toutes les actions stackées, les applique au monde
-    this.actionsBuffer.forEach(player=>{
-      Object.keys(player.data).forEach(actionType =>{
-
-        if (actionType === 'move'){
-          const playerElt = this.findPlayerById(player.id);
-          player.data[actionType].forEach(action =>{
-            playerElt.move(action);
+    if (this.actionsBuffer.length > 0) {
+      this.actionsBuffer.forEach(player => {
+        const playerElt = this.findPlayerById(player.id);
+        player.data.forEach(actionType => {
+          //!BTM actions = players input, need to insert action type:  message,?...
+          actionType.forEach(action => {
+            if (move.includes(action)) {
+              playerElt.move(action);
+            }
+            if (action === 'use') {
+              playerElt.use();
+            }
           });
-        }
-        
+        })
+        this.actionsBuffer = [];
       });
-    });
-    this.actionsBuffer = [];
-    //Reset des actions stackées
+      console.log(Date.now() - start);
+
+    }
   }
 
   updateWorld() {
@@ -50,47 +57,47 @@ export default class World {
   }
 
   updatePlayers(newWorld) {
-    if (newWorld.players){
+    if (newWorld.players) {
       //Pour chaque joueur de l'ancien monde
-      this.world.players.forEach(oldPlayer =>{
+      this.world.players.forEach(oldPlayer => {
         //S'il n'existe plus dans le nouveau monde on le supprime;
-        if (!this.findPlayerById(oldPlayer.id,newWorld.players)){
+        if (!this.findPlayerById(oldPlayer.id, newWorld.players)) {
           this.removePlayer(oldPlayer.id);
         }
 
       });
-    //Pour chaque joueur du nouveau monde
-    newWorld.players.forEach(newPlayer => {
-      //On regare s'il existe déjà dans l'ancien monde
-      if(!this.findPlayerById(newPlayer.id)){
-        this.addPlayer(newPlayer.id,newPlayer);
-      }
-    });
+      //Pour chaque joueur du nouveau monde
+      newWorld.players.forEach(newPlayer => {
+        //On regare s'il existe déjà dans l'ancien monde
+        if (!this.findPlayerById(newPlayer.id)) {
+          this.addPlayer(newPlayer.id, newPlayer);
+        }
+      });
     }
     //Pour chaque joueur on change les valeurs de la propriété
     //Liste chaque joueur de l'ancien monde
-    this.world.players.forEach(player =>{
+    this.world.players.forEach(player => {
       //On cherche la nouvelle position du joueur dans le nouveau monde
       //Postition du nouveau joueur
       //const newP = newWorld.players.array.find(player => player.id === id);
       const newP = newWorld.players.find(nPlayer => nPlayer.id === player.id);
-      if(newP){
+      if (newP) {
         player.position = newP.position;
         return
       }
       console.log("This player cannot be found in the new world");
       //player.position.x = 50;
 
-      
+
     });
   }
 
-  addPlayer(id,propreties) {
-    if (!propreties){
-    this.world.players.push(new Player(id));
-    return;
+  addPlayer(id, propreties) {
+    if (!propreties) {
+      this.world.players.push(new Player(id));
+      return;
     }
-    this.world.players.push(new Player(id,propreties));
+    this.world.players.push(new Player(id, propreties));
     console.log("New Player");
   }
 
