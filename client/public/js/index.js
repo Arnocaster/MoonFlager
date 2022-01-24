@@ -6,7 +6,7 @@ import {io} from './socket.io.esm.min.js'
 
 class app {
   constructor(socket) {
-    this.refreshRate = 500;
+    this.refreshRate = 15;
     this.network = new Network(socket);
     this.world = new World(socket.id);
     this.inputs = new Inputs();

@@ -32,6 +32,14 @@ export default class Entities {
     this.#Entities = wrappedEntities;
   }
 
+  entityWithClass(entity) {
+    if (!Array.isArray(entity)){
+      const type = entity.class;
+      return Object.assign(new this.classes[type],entity);
+    }
+    console.error('Use entitiesWithClasse instead');
+  }
+
   add(entity, entityToCopy) {
     const entityType = entity.constructor.name;
     if (!this.Entities[entityType]) {
@@ -41,6 +49,7 @@ export default class Entities {
     }
     this.Entities[entityType].push(entity);
     console.log(`New entitie ${entityType} added`);
+    return entity;
   }
 
   remove(id) {
@@ -61,18 +70,30 @@ export default class Entities {
     };
   }
   //pick
-  drop(entity) {
-    console.log("Drop:", entity);
+  drop(entity,parent) {
+    console.log(this.world);
+    parent.equipped = null;
+    console.log(this.#Entities);
+    return;
+  }
+
+  equip(entity){
+    //console.log('this equip',this.equipped = entity);
+    if (this.equipped === null){
+      this.equipped = entity;
+    }
+    console.log('equip',this.equipped)
   }
 
   processActions(actions) {
     if (Object.keys(actions).length > 0) {
       actions.forEach(stack => {
-        console.log(stack.data, stack.data.length);
         for (const movment of stack.data[0]) {
           const entityElt = this.getById(stack.id)
           if (entityElt[movment]) {
             entityElt[movment]();
+          } else {
+            console.error(`Movment ${movment}not found`);
           }
         }
       });

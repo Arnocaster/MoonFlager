@@ -29,7 +29,7 @@ export default class Network {
       });
     });
     let start = Date.now();
-    setInterval(()=>{this.run(start);},1000);
+    setInterval(()=>{this.run(start);},16);
   }
 
   run(start) {

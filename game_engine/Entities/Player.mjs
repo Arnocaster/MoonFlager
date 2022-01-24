@@ -5,12 +5,13 @@ export default class Player extends Entities {
   constructor(id, propreties) {
     super();
     this.id = id;
+    this.class = this.constructor.name;
     if (!propreties) {
       this.position = {
         x: parseInt(Math.random() * 400),
         y: parseInt(Math.random() * 400),
         angle: Math.PI,
-        speed: 1,
+        speed: 4,
         speed_rotation: 0.08
       };
       this.color = `rgb(${parseInt(Math.random() * 255)}, 
@@ -20,17 +21,24 @@ export default class Player extends Entities {
       this.position = propreties.position;
       this.color = propreties.color;
     }
-    this.equipped = new Flag(this.id,this.position);
+    this.equipped = null;
+    return this;
   }
 
   use() {
     if (this.equipped !== null) {
-      console.log(this.equipped);
+      this.entityWithClass(this.equipped).use(this);
+      return
     }
+    console.log('Nothing equipped');
   }
-  coucou(){
-    console.log("coucou");
+
+  drop(entity){
+    console.log(this,entity,this.Entities);  
+    console.log("player drop");
+    this.equipped = null;
   }
+
   render(ctx) {
     ctx.beginPath();
     ctx.lineWidth = 1;

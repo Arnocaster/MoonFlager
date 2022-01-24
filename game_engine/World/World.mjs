@@ -16,13 +16,13 @@ export default class World {
 
   constructor(id) {
     this.id = id || 'server';
-    this.entities = new Entities;
+    this.entities = new Entities(this);
     this.#actionsBuffer = [];
 
     this.#settings = {
       width: 400,
       height: 400,
-      refreshRate: 15,
+      refreshRate: 5,
     }
 
 
@@ -31,6 +31,9 @@ export default class World {
   addPlayer(id) {
     if (id) {
       this.entities.add(new Player(id));
+      const player = this.entities.getById(id);
+      player.equip(new Flag);
+      console.log(player);
       return
     }
     console.error('You need an Id to create a player');
