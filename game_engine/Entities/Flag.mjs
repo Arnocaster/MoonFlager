@@ -4,8 +4,8 @@ export default class Flag extends Entities {
   constructor(ownerId, position) {
     super();
     this.id = parseInt(Math.random() * 5000000);
-    this.position = { x: position.x, y: position.y };
-    this.owner = ownerId;
+    this.position = position ? {x:position.x,y:position.y} : {x:200,y:200};
+    this.owner = ownerId || parseInt(Math.random() * 5000000);
     this.isInWorld = false;
     this.text = `xxxI MADE ITxxx`;
     this.color = `rgb(${parseInt(Math.random() * 255)}, 

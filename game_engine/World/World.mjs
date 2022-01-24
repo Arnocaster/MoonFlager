@@ -1,4 +1,4 @@
-import { Entities, Player } from '../index.mjs';
+import { Entities, Player, Flag } from '../index.mjs';
 
 export default class World {
   #settings
@@ -10,9 +10,14 @@ export default class World {
     return this.#actionsBuffer;
   }
 
+  set actionsBuffer(action) {
+   this.#actionsBuffer.push(action);
+  }
+
   constructor(id) {
     this.id = id || 'server';
     this.entities = new Entities;
+    this.#actionsBuffer = [];
 
     this.#settings = {
       width: 400,
@@ -20,7 +25,7 @@ export default class World {
       refreshRate: 15,
     }
 
-    this.#actionsBuffer = [];
+
   }
 
   addPlayer(id) {
@@ -35,69 +40,28 @@ export default class World {
     if (id) {
       console.log(id);
       this.entities.remove(id);
-      console.log(this.entities.get());
+      console.log(this.entities);
       return
     }
     console.error('You need an Id to delete a player');
   }
-
+  /** Update players and actions
+   * Client = update Entities + (to be implemented process Input)
+   * Server = process Inputs
+   * @param {object} newWorld client-side only === fresh server entities
+   * @returns {object} return all entitites
+   */
   updateWorld(newWorld) {
-    const oldWorld = this.entities.get();
-
     //Only Client side;
     if (newWorld) {
-       //Si des entités sont présentes dans oldWorld mais pas dans le nouveau on les supprime
-       Object.keys(oldWorld).forEach(type=>{
-         oldWorld[type].forEach(oldEnt =>{
-          const found  = newWorld[type].find(newEnt => newEnt.id === oldEnt.id);
-          if (!found){
-            this.entities.remove(oldEnt.id);
-          }
-         });
-        
-      
-      });
-
-
-      Object.keys(newWorld).forEach(type => {
-        newWorld[type].forEach(entity => {
-          //Si oldWorld est vide et qu'on a recu un monde avec une entité :on ajoute une entité
-          if (Object.keys(oldWorld).length<1){
-            const thisClass = new this.entities.classes[type];
-            this.entities.add(thisClass, entity);
-          }
-          //Si la propriété existe déjà dans le monde
-          if (oldWorld[type]) {
-            //On regarde si l'entité existe déjà dans l'ancien monde
-            const foundInOld = oldWorld[type].find(oldEnt => oldEnt.id === entity.id);
-            //Si l'entité n'est pas trouvée dans l'ancien monde on l'ajoute
-            if (!foundInOld) {
-              const thisClass = new this.entities.classes[type];
-              this.entities.add(thisClass, entity);
-            }
-          } else {
-            //?sinon on la rajoute???
-          }
-        });
-      });
-
-     
-
-
-
-      // Object.keys(oldWorld).forEach(type=>{
-      //   oldWorld[type].forEach(oldEntity => {
-      //     //On cherche dans l'ancien monde si des joueurs ne sont pas présent dans le nouveau;
-      //     const lostClient = newWorld[type].filter(NewEntity => NewEntity.id !== oldEntity.id && NewEntity.id !== this.id);
-      //     if (lostClient.length > 0){
-      //       this.entities.remove(lostClient[0].id);
-      //     }
-      //   });
-      // });
-
+      //Ajoute les classes et mets a jours le monde 
+      this.entities.entitiesWithClasses(newWorld);
     }
-    //Update each entitie;
-    return this.entities.get();
+    //Process Actions
+    //Actually only Players Actions
+    this.entities.processActions(this.#actionsBuffer);
+    this.#actionsBuffer = [];
+    return this.entities.Entities;
   }
 
 }

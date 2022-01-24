@@ -37,8 +37,6 @@ export default class render {
        Object.keys(world).forEach(type => {
          const entities = world[type];
          entities.forEach(entitie => {
-           console.log(entitie);
-           //!GET Entitie.RENDER();
            entitie.render(ctx);
          })
        });

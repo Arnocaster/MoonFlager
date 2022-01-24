@@ -4,7 +4,7 @@ import {World} from '../../game_engine/index.mjs'
 export default class Network {
   constructor(io){
     this.io = io;
-    this.world = new World(); 
+    this.world = new World();
     this.socket = null;
 
     io.on('connection',(socket)=>{
@@ -12,15 +12,15 @@ export default class Network {
       this.world.addPlayer(socket.id);
       this.io.to(socket.id).emit('server_time',Date.now());
       console.log(`New connection with Id : ${socket.id} and Ip : ${socket.handshake.address}`);
-      console.log('Server world after new connection',this.world.entities.get());
+      console.log('Server world after new connection',this.world.entities.Entities);
 
       socket.on('disconnect', (reason) => {
         this.world.removePlayer(socket.id);
         console.log(`Client disconnected with Id ${socket.id} and IP ${socket.handshake.address} ${reason}`);
-        console.log('Server world after new deconnection',this.world.entities.get());
+        console.log('Server world after new deconnection',this.world.entities.Entities);
       });
 
-      socket.on('player_input', (data) => {
+      socket.on('player_actions', (data) => {
         this.world.actionsBuffer.push({id : socket.id, data});
       });
 
@@ -34,8 +34,8 @@ export default class Network {
 
   run(start) {
     // console.clear();
-    // console.log(this.world.entities.get());
-    const newWorld = Object.assign({}, this.world.updateWorld());
+    // console.log(this.world.entities);
+    const newWorld = this.world.updateWorld();
     this.io.emit('world_update',newWorld);
   }
 }

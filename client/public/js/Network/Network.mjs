@@ -20,6 +20,7 @@ export default class Network {
       });
       //! NEED BUFFER WORLD BEFORE UPDATE
       this.socket.on('world_update', (newWorld) => {
+        //console.log(newWorld.Player[0]);
         this.tempWorld = newWorld;
       });
   }
@@ -42,8 +43,10 @@ export default class Network {
     this.socket.emit(type,data);
   }
 
-  sendInputs(inputs){
-    this.socket.emit('player_inputs',inputs);
+  sendActions(actions){
+    if (actions.length > 0){
+    this.socket.emit('player_actions',actions);
+    }
   }
 
   ping() {

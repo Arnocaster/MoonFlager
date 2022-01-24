@@ -1,4 +1,5 @@
 import Entities from './Entities.mjs';
+import Flag from './Flag.mjs';
 
 export default class Player extends Entities {
   constructor(id, propreties) {
@@ -19,15 +20,17 @@ export default class Player extends Entities {
       this.position = propreties.position;
       this.color = propreties.color;
     }
-    //this.equipped = new Flag(world,this.id,this.position);
+    this.equipped = new Flag(this.id,this.position);
   }
 
   use() {
     if (this.equipped !== null) {
-      this.equipped.use(this);
+      console.log(this.equipped);
     }
   }
-
+  coucou(){
+    console.log("coucou");
+  }
   render(ctx) {
     ctx.beginPath();
     ctx.lineWidth = 1;
@@ -38,22 +41,26 @@ export default class Player extends Entities {
     ctx.stroke();
   }
 
+  moveForward(){
+    this.position.x = this.position.x + (Math.cos(this.position.angle) * this.position.speed);
+    this.position.y = this.position.y + (Math.sin(this.position.angle) * this.position.speed);
+    this.checkCollision();
+  }
+  moveBackward(){
+    this.position.x = this.position.x - (Math.cos(this.position.angle) * this.position.speed);
+    this.position.y = this.position.y - (Math.sin(this.position.angle) * this.position.speed);
+    this.checkCollision();
+  }
+  turnLeft(){
+    this.position.angle -= this.position.speed_rotation;
+    this.checkCollision();
+  }
 
-  move(movment) {
-    if (movment.includes('moveForward')) {
-      this.position.x = this.position.x + (Math.cos(this.position.angle) * this.position.speed);
-      this.position.y = this.position.y + (Math.sin(this.position.angle) * this.position.speed);
-    }
-    if (movment.includes('moveBackward')) {
-      this.position.x = this.position.x - (Math.cos(this.position.angle) * this.position.speed);
-      this.position.y = this.position.y - (Math.sin(this.position.angle) * this.position.speed);
-    }
-    if (movment.includes('turnLeft')) {
-      this.position.angle -= this.position.speed_rotation;
-    }
-    if (movment.includes('turnRight')) {
-      this.position.angle += this.position.speed_rotation;
-    }
+  turnRight(){
+    this.position.angle += this.position.speed_rotation;
+    this.checkCollision();
+  }
+  checkCollision() {
     if (this.position.x > 400) {
       this.position.x = 400
     }

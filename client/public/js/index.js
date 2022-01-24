@@ -6,19 +6,26 @@ import {io} from './socket.io.esm.min.js'
 
 class app {
   constructor(socket) {
-    this.refreshRate = 5;
+    this.refreshRate = 500;
     this.network = new Network(socket);
     this.world = new World(socket.id);
     this.inputs = new Inputs();
     this.render = new Render();
+    let start = Date.now();
     setInterval(() => { this.update(); }, this.refreshRate);
   }
 
   async update() {
+    this.inputs.inputManager();
+    const actions = this.inputs.getActions();
+    this.network.sendActions(actions);
+    if (actions.length > 0){
+    this.world.actionsBuffer.push({id:this.network.socket.id,data:actions});
+    }
     const newWorld = this.network.getTempWorld();
     this.world.updateWorld(newWorld);
     this.network.ping();
-    //this.render.render(this.world,this.network.latency);
+    this.render.render(this.world.entities.Entities,this.network.latency);
   }
 
 }
