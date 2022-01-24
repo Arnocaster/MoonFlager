@@ -1,7 +1,6 @@
-import {io} from '../socket.io.esm.min.js'
-
 export default class Network {
-  constructor() {
+  constructor(socket) {
+    this.socket = socket;
     this.latency = [];
     this.lastPing = {ping_req : Date.now()};
     this.latencyRate = 100;
@@ -9,11 +8,6 @@ export default class Network {
     this.debug_slowClient = false;
 
     this.tempWorld = null;
-
-    this.socket = io('http://109.14.79.91:3003');
-
-    
-    if (this.socket) {
      
       this.socket.on('ping_response', (res) => {
         res.ping_end = Date.now();
@@ -28,12 +22,11 @@ export default class Network {
       this.socket.on('world_update', (newWorld) => {
         this.tempWorld = newWorld;
       });
-    }
   }
 
   getId(){
     //! FIND THIS SOCKET.ID
-    return this.socket.id;
+    //return this.socket.id;
   }
 
   getTempWorld(){
@@ -50,7 +43,7 @@ export default class Network {
   }
 
   sendInputs(inputs){
-    //this.socket.emit('player_inputs',inputs);
+    this.socket.emit('player_inputs',inputs);
   }
 
   ping() {

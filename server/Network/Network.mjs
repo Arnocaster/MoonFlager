@@ -8,6 +8,7 @@ export default class Network {
     this.socket = null;
 
     io.on('connection',(socket)=>{
+      this.io.to(socket.id).emit('client_socket', socket.id);
       this.world.addPlayer(socket.id);
       this.io.to(socket.id).emit('server_time',Date.now());
       console.log(`New connection with Id : ${socket.id} and Ip : ${socket.handshake.address}`);
@@ -28,10 +29,12 @@ export default class Network {
       });
     });
     let start = Date.now();
-    setInterval(()=>{this.run(start);},500);
+    setInterval(()=>{this.run(start);},1000);
   }
 
   run(start) {
+    // console.clear();
+    // console.log(this.world.entities.get());
     const newWorld = Object.assign({}, this.world.updateWorld());
     this.io.emit('world_update',newWorld);
   }

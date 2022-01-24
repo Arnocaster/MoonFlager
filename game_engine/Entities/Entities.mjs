@@ -2,11 +2,18 @@ import {Player,Flag} from '../index.mjs'
 
 export default class Entities {
   #Entities
+  #classes
+
+
 
   constructor() {
     this.#Entities = [];
-    this.classes = {Player,Flag};
+    this.#classes = {Player,Flag};
     return this;
+  }
+
+  get classes(){
+    return this.#classes;
   }
 
   get(type) {
