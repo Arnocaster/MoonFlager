@@ -8,12 +8,16 @@ export default class Network {
     this.socket = null;
 
     io.on('connection',(socket)=>{
-      this.io.to(socket.id).emit('client_socket', socket.id);
-      this.world.create('Player', { socket:socket.id });
-      this.world.create('Flag');
-      this.io.to(socket.id).emit('server_time',Date.now());
       console.log(`New connection with Id : ${socket.id} and Ip : ${socket.handshake.address}`);
-      console.log('Server world after new connection',this.world.world);
+      this.io.to(socket.id).emit('client_socket', socket.id);
+      const player = this.world.create('Player', { socket:socket.id });
+      const flag = this.world.create('Flag');
+      this.world.equip(flag,player);
+      this.io.to(socket.id).emit('server_time',Date.now());
+   
+      Object.keys(this.world.world).forEach(type=>{
+        this.world.world[type].forEach(entity =>{console.log(entity.class,'id',entity.id)});
+      });
 
       socket.on('disconnect', (reason) => {
         this.world.destroy({socket : socket.id});
@@ -31,6 +35,15 @@ export default class Network {
     });
     let start = Date.now();
     setInterval(()=>{this.run(start);},16);
+  }
+
+  getMethods (obj) {
+    let properties = new Set()
+    let currentObj = obj
+    do {
+      Object.getOwnPropertyNames(currentObj).map(item => properties.add(item))
+    } while ((currentObj = Object.getPrototypeOf(currentObj)))
+    return [...properties.keys()].filter(item => typeof obj[item] === 'function')
   }
 
   run(start) {
