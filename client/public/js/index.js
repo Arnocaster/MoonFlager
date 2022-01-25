@@ -20,12 +20,12 @@ class app {
     const actions = this.inputs.getActions();
     this.network.sendActions(actions);
     if (actions.length > 0){
-    this.world.actionsBuffer.push({id:this.network.socket.id,data:actions});
+    this.world.actionsBuffer.push({socket:this.network.socket.id,data:actions});
     }
     const newWorld = this.network.getTempWorld();
     this.world.updateWorld(newWorld);
     this.network.ping();
-    this.render.render(this.world.entities.Entities,this.network.latency);
+    this.render.render(this.world.world,this.network.latency);
   }
 
 }

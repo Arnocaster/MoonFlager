@@ -25,10 +25,6 @@ export default class Network {
       });
   }
 
-  getId(){
-    //! FIND THIS SOCKET.ID
-    //return this.socket.id;
-  }
 
   getTempWorld(){
     if (this.tempWorld !== null && Object.keys(this.tempWorld).length > 0){

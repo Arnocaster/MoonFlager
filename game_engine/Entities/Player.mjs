@@ -2,25 +2,21 @@ import Entities from './Entities.mjs';
 import Flag from './Flag.mjs';
 
 export default class Player extends Entities {
-  constructor(id, propreties) {
+  constructor(obj) {
     super();
-    this.id = id;
+    this.socket = null;
+    //?A supprimer après la création de la factory
     this.class = this.constructor.name;
-    if (!propreties) {
-      this.position = {
-        x: parseInt(Math.random() * 400),
-        y: parseInt(Math.random() * 400),
-        angle: Math.PI,
-        speed: 4,
-        speed_rotation: 0.08
-      };
-      this.color = `rgb(${parseInt(Math.random() * 255)}, 
+    this.position = {
+      x: parseInt(Math.random() * 400),
+      y: parseInt(Math.random() * 400),
+      angle: Math.PI,
+      speed: 4,
+      speed_rotation: 0.08
+    };
+    this.color = `rgb(${parseInt(Math.random() * 255)}, 
                       ${parseInt(Math.random() * 255)},
                       ${parseInt(Math.random() * 255)})`;
-    } else {
-      this.position = propreties.position;
-      this.color = propreties.color;
-    }
     this.equipped = null;
     return this;
   }
@@ -33,8 +29,8 @@ export default class Player extends Entities {
     console.log('Nothing equipped');
   }
 
-  drop(entity){
-    console.log(this,entity,this.Entities);  
+  drop(entity) {
+    console.log(this, entity, this.Entities);
     console.log("player drop");
     this.equipped = null;
   }
@@ -49,22 +45,22 @@ export default class Player extends Entities {
     ctx.stroke();
   }
 
-  moveForward(){
+  moveForward() {
     this.position.x = this.position.x + (Math.cos(this.position.angle) * this.position.speed);
     this.position.y = this.position.y + (Math.sin(this.position.angle) * this.position.speed);
     this.checkCollision();
   }
-  moveBackward(){
+  moveBackward() {
     this.position.x = this.position.x - (Math.cos(this.position.angle) * this.position.speed);
     this.position.y = this.position.y - (Math.sin(this.position.angle) * this.position.speed);
     this.checkCollision();
   }
-  turnLeft(){
+  turnLeft() {
     this.position.angle -= this.position.speed_rotation;
     this.checkCollision();
   }
 
-  turnRight(){
+  turnRight() {
     this.position.angle += this.position.speed_rotation;
     this.checkCollision();
   }

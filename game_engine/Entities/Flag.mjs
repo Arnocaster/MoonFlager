@@ -3,7 +3,6 @@ import { Entities } from '../index.mjs';
 export default class Flag extends Entities {
   constructor(ownerId, position) {
     super();
-    this.id = parseInt(Math.random() * 5000000);
     this.class = this.constructor.name;
     this.position = position ? {x:position.x,y:position.y} : {x:200,y:200};
     this.owner = ownerId || parseInt(Math.random() * 5000000);
