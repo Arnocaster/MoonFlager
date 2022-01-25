@@ -16,8 +16,8 @@ export default class World {
 
   constructor(id) {
     this.id = id || 'server';
-    this.entities = new Entities();
     this.world = {};
+    this.entities = new Entities(this.world);
     this.#actionsBuffer = [];
 
     this.#settings = {
@@ -39,6 +39,7 @@ export default class World {
 
   create(type, params) {
     const newEntity = this.entities.create(type, params);
+    newEntity.use = ()=>{console.log("coucou")};
     if (!this.world[type]) {
       this.world[type] = [newEntity];
       return newEntity;
@@ -80,19 +81,14 @@ export default class World {
   }
 
   equip(what,who){
-    console.log("equipbrut",what.id,who.id);
     if(what.id && who.id){
-    const whatElt = this.find({...what});
-    this.destroy({...whatElt});
-    const whoElt = this.find({...who});
-    whoElt.equip(whatElt);
-    console.log('foundElts',whatElt.id,whoElt.id);
+    this.destroy({...what});
+    console.log(this.entities.create(what.constructor.name,what));
+    who.equip(what);
     return
     }
     console.error(`Equip : This entity doesn't have an id`);
   }
-
-  
 
 
 
@@ -127,6 +123,7 @@ export default class World {
     //Process Actions
     this.processActions();
     this.#actionsBuffer = [];
+    console.log(this.world);
     return this.world;
   }
 

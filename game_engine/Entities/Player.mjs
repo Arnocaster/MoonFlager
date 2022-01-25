@@ -2,7 +2,7 @@ import Entities from './Entities.mjs';
 import Flag from './Flag.mjs';
 
 export default class Player extends Entities {
-  constructor(obj) {
+  constructor() {
     super();
     this.socket = null;
     //?A supprimer après la création de la factory
@@ -21,19 +21,7 @@ export default class Player extends Entities {
     return this;
   }
 
-  use() {
-    if (this.equipped !== null) {
-      this.entityWithClass(this.equipped).use(this);
-      return
-    }
-    console.log('Nothing equipped');
-  }
-
-  drop(entity) {
-    console.log(this, entity, this.Entities);
-    console.log("player drop");
-    this.equipped = null;
-  }
+  
 
   render(ctx) {
     ctx.beginPath();

@@ -2,9 +2,8 @@ import {Player, Flag } from '../index.mjs'
 
 export default class Entities {
   #classes
-  
 
-  constructor() {
+  constructor(world) {
     this.id = Entities.idCounter;
     this.#classes = { Player, Flag };
     return this;
@@ -45,14 +44,6 @@ export default class Entities {
       });
     });
     return wrappedEntities;
-  }
-
-  entityWithClass(entity) {
-    if (!Array.isArray(entity)){
-      const type = entity.class;
-      return this.create(type,entitie);
-    }
-    console.error('Use entitiesWithClasse instead');
   }
   //use
   //pick

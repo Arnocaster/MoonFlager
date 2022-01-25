@@ -14,7 +14,7 @@ export default class Flag extends Entities {
     return this;
   }
 
-  use(parent) {
+  usage(parent) {
     parent.drop(this);
   }
 
