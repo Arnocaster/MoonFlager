@@ -1,13 +1,13 @@
 import Network from './Network/Network.mjs';
 import Inputs from './Inputs/Inputs.mjs';
 import Render from './Render/Render.mjs'
-import world  from '/game-engine/World.mjs'
+import World  from '/game-engine/World.mjs'
 import { io } from './socket.io.esm.min.js'
 
 const app = (socket) => {
   const refreshRate = 15;
   const network= new Network(socket);
-  const clientWorld = world();
+  const clientWorld = new World(socket);
   const inputs= new Inputs();
   const render= new Render();
   const startTime= Date.now();
@@ -19,11 +19,10 @@ const app = (socket) => {
       clientWorld.actionsBuffer.push({ socket: network.socket.id, data: actions });
     }
     const newWorld = network.getTempWorld();
-    console.log(world);
+    console.log(newWorld);
     clientWorld.updateWorld(newWorld);
     network.ping();
     //render.render(clientWorld, network.latency);
-    console.log(clientWorld);
   };
 
   return {

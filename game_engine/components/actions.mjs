@@ -1,8 +1,8 @@
-export function actions(params) {
+export function actions(params, newEntity) {
   const actionsComponent = {
     equip: (what) => {
-      const entityIndex = world.findIndex(entity => entity.id === what.id);
-      entityIndex ? world.splice(entityIndex, 1) : console.log('No index');
+      const whatEntity = newEntity.findBy({ id: what.id });
+      whatEntity ? whatEntity.destroy() : console.log('No index');
       newEntity.equipped = what;
     },
 
@@ -19,9 +19,9 @@ export function actions(params) {
       newEntity.equipped = null;
     },
   }
-  if (params){
+  if (params) {
     const actions = {};
-    Object.keys(params.actions).forEach(param=>{
+    Object.keys(params.actions).forEach(param => {
       actions[param] = actionsComponent[param];
     });
     return actions

@@ -13,6 +13,15 @@ export default function entityFactory(world,type,socket) {
     newEntity.addToWorld = ()=>{
       world.push(newEntity);
     }
+    newEntity.findBy = (params)=>{
+
+      if (Object.keys(params).length === 1){
+        const proprety = Object.keys(params)[0];
+        const value = params[Object.keys(params)[0]];
+        const foundEntity = world.find(entity => entity[proprety] === value);
+        return foundEntity;
+      }
+    }
 
     if (Entities[type] !== undefined){
       const Entity = Entities[type]();
@@ -25,7 +34,7 @@ export default function entityFactory(world,type,socket) {
 
         //If it's a component
         if (Object.keys(Components).includes(param)){
-        const props = Components[param](Entity);
+        const props = Components[param](Entity,newEntity);
         Object.keys(props).forEach(prop => {newEntity[prop]=props[prop]});
         }
        
