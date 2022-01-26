@@ -1,4 +1,3 @@
-import {World} from '../game_engine/index.mjs'
 import Network from './Network/Network.mjs'
 
 //DOTENV
@@ -32,7 +31,7 @@ app.get('/',(req,res)=>{
 });
 
 const io = new socketio.Server({cors: {origin: "*"}});
-new Network(io);
+const network = Network(io);
 
 try {
   io.listen(Socket_port);
