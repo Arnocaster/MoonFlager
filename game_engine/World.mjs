@@ -45,14 +45,15 @@ export default class World {
       this.findBy(params).destroy();
     }
 
-   init() {
+    init() {
 
-    }
+      }
+    
 
-   updateWorld(newWorld) {
+    updateWorld(newWorld) {
      if (newWorld){
        //Server side
-       console.log(newWorld);
+       console.log(this.actionsBuffer);
        this.world = newWorld;
      }
       console.log('updateWorld');

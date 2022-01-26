@@ -24,7 +24,7 @@ export default function Network(io) {
     });
 
     socket.on('player_actions', (data) => {
-      this.world.actionsBuffer.push({ socket: socket.id, data });
+      serverWorld.actionsBuffer.push({ socket: socket.id, data });
     });
 
     socket.on('ping_request', (ping_req) => {
