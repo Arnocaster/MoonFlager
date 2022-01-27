@@ -1,25 +1,23 @@
-export function move() {
-  return {
-    moveForward: () => {
-      this.position.x = this.position.x + (Math.cos(this.position.angle) * this.position.speed);
-      this.position.y = this.position.y + (Math.sin(this.position.angle) * this.position.speed);
-      this.checkCollision();
+export function move(newEntity) {
+  const moveComponent = {
+    moveForward: (entity) => {
+      console.log("before",entity.position,entity.move);
+      entity.position.x = entity.position.x + (Math.cos(entity.position.angle) * entity.move.speed);
+      entity.position.y = entity.position.y + (Math.sin(entity.position.angle) * entity.move.speed);
+      console.log(entity.position,entity.move);
     },
-    moveBackward: () => {
-      this.position.x = this.position.x - (Math.cos(this.position.angle) * this.position.speed);
-      this.position.y = this.position.y - (Math.sin(this.position.angle) * this.position.speed);
-      this.checkCollision();
+    moveBackward: (entity) => {
+      entity.position.x = entity.position.x - (Math.cos(entity.position.angle) * entity.move.speed);
+      entity.position.y = entity.position.y - (Math.sin(entity.position.angle) * entity.move.speed);
     },
-    turnLeft: () => {
-      this.position.angle -= this.position.speed_rotation;
-      this.checkCollision();
-    },
-
-    turnRight: () => {
-      this.position.angle += this.position.speed_rotation;
-      this.checkCollision();
+    turnLeft: (entity) => {
+      entity.move.angle -= entity.move.speed_rotation;
     },
 
+    turnRight: (entity) => {
+      entity.move.angle += entity.move.speed_rotation;
+    },
   }
+  return moveComponent;
 }
 

@@ -5,7 +5,7 @@ export function flag() {
                 ${parseInt(Math.random() * 255)},
                 ${parseInt(Math.random() * 255)})`,
     usage : (entity) =>{
-    entity.drop();
+      entity.drop();
     },
     render : (ctx) => {
       ctx.beginPath();

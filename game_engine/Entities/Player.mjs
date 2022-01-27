@@ -1,7 +1,9 @@
 export function player() {
   return {
   socket : null,
-  actions : {equip:true,use:true,drop:true},
+  actions : {equip:true,
+             use:true,
+             drop:true},
   position : {random : true},
   move : {type : 'human',
           speed : 1,

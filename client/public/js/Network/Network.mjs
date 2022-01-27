@@ -20,14 +20,13 @@ export default class Network {
       });
       //! NEED BUFFER WORLD BEFORE UPDATE
       this.socket.on('world_update', (newWorld) => {
-        //console.log(newWorld.Player[0]);
         this.tempWorld = newWorld;
       });
   }
 
 
   getTempWorld(){
-    if (this.tempWorld !== null && Object.keys(this.tempWorld).length > 0){
+    if (this.tempWorld !== null && this.tempWorld.length > 0){
     const tempWorld = this.tempWorld;
     this.tempWorld = [];
     return tempWorld

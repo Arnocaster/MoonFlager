@@ -19,8 +19,8 @@ const app = (socket) => {
       clientWorld.actionsBuffer.push({ socket: network.socket.id, data: actions });
     }
     const newWorld = network.getTempWorld();
-    console.log(newWorld);
     clientWorld.updateWorld(newWorld);
+    console.log(newWorld,clientWorld.world[0].position);
     network.ping();
     //render.render(clientWorld, network.latency);
   };

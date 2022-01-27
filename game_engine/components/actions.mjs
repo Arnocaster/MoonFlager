@@ -1,23 +1,25 @@
 export function actions(params, newEntity) {
   const actionsComponent = {
-    equip: (what) => {
-      const whatEntity = newEntity.findBy({ id: what.id });
-      whatEntity ? whatEntity.destroy() : console.log('No index');
-      newEntity.equipped = what;
+    equip: (entity,what) => {
+      // const whatEntity = entity.findBy({ id: what.id });
+      // whatEntity ? whatEntity.destroy() : console.log('No index');
+      // entity.equipped = what;
     },
 
-    use: () => {
-      newEntity.equipped.usage();
+    use: (entity) => {
+      entity.equipped.usage();
     },
 
-    usage: () => {
-      newEntity.drop();
+    usage: (entity) => {
+      entity.drop();
     },
 
-    drop: () => {
-      world.push(newEntity.equipped);
-      newEntity.equipped = null;
+    drop: (entity) => {
+      world.push(entity.equipped);
+      entity.equipped = null;
     },
+    
+    
   }
   if (params) {
     const actions = {};
