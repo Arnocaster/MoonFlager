@@ -1,17 +1,24 @@
 export function actions(params, newEntity) {
   const actionsComponent = {
     equip: (entity,what) => {
-      entity.equipped = what;
+      entity.equipped = {...what};
       what.destroy();
     },
 
     use: (entity) => {
-      entity.equipped.usage();
+      if (entity.equipped){entity.equipped.usage(entity);return;};
+      console.error('Use : This entity has no equipment');
     },
 
     drop: (entity) => {
-      world.push(entity.equipped);
+      console.log(entity)
+      if (entity.equipped){
+      //!!!! SUPPRIMER LA SHALLOW COPY POUR QUE L'OBJET SUIVE LE JOUEUR;
+      entity.equipped.position = {...entity.position};
+      entity.addToWorld(entity.equipped);
       entity.equipped = null;
+      return;}
+      console.error('Drop : This entity has no equipment');
     },
     
     

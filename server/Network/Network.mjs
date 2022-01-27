@@ -4,9 +4,7 @@ import World from '../../game_engine/World.mjs'
 export default function Network(io) {
   const serverWorld = new World();
   const socket = null;
-  const refreshRate = 500;
-
-
+  const refreshRate = 1000;
 
   io.on('connection', (socket) => {
     console.log(`New connection with Id : ${socket.id} and Ip : ${socket.handshake.address}`);
@@ -36,7 +34,6 @@ export default function Network(io) {
   const run = (start) => {
     setInterval(()=>{
       const newWorld = serverWorld.updateWorld();
-      console.log(newWorld);
       io.emit('world_update',newWorld);
     },refreshRate)
 

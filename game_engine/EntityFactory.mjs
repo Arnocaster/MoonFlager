@@ -1,20 +1,38 @@
 import * as Entities from './Entities/Entities.mjs'
 import * as Components from './components/Components.mjs'
 
-export default function entityFactory(world,type,socket) {
+
+export default function entityFactory(world,type,param) {
     const newEntity = {
-      id : world.length,
       type : type,
     }
+
+    const uniqueId = ()=>{
+      let id = ``;
+      for(let i=0;i<3;i++){
+        id += `${parseInt(Math.random()*999)}`;
+        (i<2)? id +='-' : '';
+      }
+      if(!world.map(x=>x.id).includes(id)){return id}
+      console.error('not unique');
+      uniqueId();
+    }
+  
     //minimum props of an entitie
     newEntity.destroy = () => {
-      world.splice(newEntity.id,1);
+      const newEntityIndex = world.findIndex(entity => entity.id === newEntity.id);
+      world.splice(newEntityIndex,1);
     }
-    newEntity.addToWorld = ()=>{
+    newEntity.addToWorld = (entity)=>{
+      if (entity){
+        world.push(entity);
+      } else {
       world.push(newEntity);
+      }
     }
+    
     newEntity.findBy = (params)=>{
-
+      
       if (Object.keys(params).length === 1){
         const proprety = Object.keys(params)[0];
         const value = params[Object.keys(params)[0]];
@@ -43,7 +61,6 @@ export default function entityFactory(world,type,socket) {
         if (Object.keys(Components).includes(param)){
         const props = Components[param](EntityRecipe,newEntity);
         Object.keys(props).forEach(prop => {newEntity[prop]=props[prop]});
-        console.log(newEntity.position)
         }
        
       });
@@ -53,15 +70,11 @@ export default function entityFactory(world,type,socket) {
       newEntity.actions ? delete newEntity.actions : '';
       //newEntity.move ? delete newEntity.move : '';
 
-      if(type === 'player'){
-        if (!socket){
-          console.error('Player has no socket!');
-          return
-        }
-        newEntity.socket = socket;
-      } 
+      (!param.id)? newEntity.id = uniqueId() : newEntity.id = param.id;
+      console.log(param.socket);
+      (param.socket) ? newEntity.socket = param.socket : '';
 
-      console.log(newEntity);
+      console.log('new :',newEntity);
       newEntity.addToWorld();
       return newEntity
     }

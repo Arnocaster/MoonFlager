@@ -10,7 +10,6 @@ export default class render {
     ctx.clearRect(0, 0, 400, 400);
     //render Ping
     if (latency) {
-      //console.log(latency);
       latency.forEach((ping, index) => {
         ctx.beginPath();
         ctx.lineWidth = 3;
@@ -35,7 +34,7 @@ export default class render {
     //!Render each entities/object of the world
     if (world) {
       world.forEach(entity =>{
-        entity.render(ctx,entity.position);
+        entity.render(ctx,entity.position,entity.color);
       })
     }
   }

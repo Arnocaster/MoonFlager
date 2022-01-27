@@ -8,15 +8,15 @@ export default class World {
     this.socket = socket || 'server';
   }
   //!!! WORLD.PUSH IS NOT A FUNCTION, PB DE SCOPE RETURN,FONCTION.0
-  createPlayer(socket) {
-    const player = entityFactory(this.world, 'player', socket);
+  createPlayer(socket,id) {
+    const player = entityFactory(this.world, 'player', {socket,id});
     const flag = this.createEntity('flag');
     player.equip(player,flag);
     return player;
   }
 
-  createEntity(type) {
-    const entity = entityFactory(this.world, type);
+  createEntity(type,id) {
+    const entity = entityFactory(this.world, type,{id});
     return entity;
   }
 
@@ -42,7 +42,8 @@ export default class World {
   }
 
   destroy(params) {
-    this.findBy(params).destroy();
+    const entity = this.findBy(params);
+    (entity) ? entity.destroy():'';
   }
 
   init() {
@@ -50,7 +51,7 @@ export default class World {
   }
 
   processActions() {
-    //(this.actionsBuffer.length > 0) ? console.log('actionBuffer', this.actionsBuffer) : '';
+    (this.actionsBuffer.length > 0) ? console.log('actionBuffer', this.actionsBuffer) : '';
 
     if (this.actionsBuffer.length > 0) {
       for (const stackAction of this.actionsBuffer) {
@@ -60,9 +61,7 @@ export default class World {
         const newActions = stackAction.data.flat();
         newActions.forEach(newAction => {
           entity[newAction](entity);
-          //console.log(entity[newAction]());
         });
-        console.log("actions after process", entity.position);
       }
     };
 
@@ -80,15 +79,21 @@ updateWorld(newWorld) {
     const newEntities = newWorld.filter(entity => !oldEntitiesIds.includes(entity.id));
     
     lostEntities.forEach(entity =>{entity.destroy()});
-
+    console.log(newEntities);
     newEntities.forEach(entity => {
       if(entity.type === "player"){
-        this.createPlayer(entity.socket);
+        this.createPlayer(entity.socket,entity.id);
       } else {
-        this.createEntity(entity.type);
+        this.createEntity(entity.type,entity.id);
       }
     });
-    this.actionsBuffer = [];
+
+    newWorld.forEach(entity => {
+      let oldEnt = this.findBy({id:entity.id});
+      if (oldEnt){
+      oldEnt = Object.assign(oldEnt,entity);
+      }
+    });
   }
   this.processActions();
   //console.log(this.display({position:''}))

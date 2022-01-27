@@ -20,7 +20,6 @@ const app = (socket) => {
     }
     const newWorld = network.getTempWorld();
     clientWorld.updateWorld(newWorld);
-    //console.log(newWorld,clientWorld);
     network.ping();
     render.render(clientWorld.world, network.latency);
   };

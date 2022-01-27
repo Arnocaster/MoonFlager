@@ -11,11 +11,11 @@ export function player() {
   color : `rgb(${parseInt(Math.random() * 255)}, 
                ${parseInt(Math.random() * 255)},
                ${parseInt(Math.random() * 255)})`,
-  render : (ctx,position) => {
+  render : (ctx,position,color) => {
     ctx.beginPath();
     ctx.lineWidth = 1;
     ctx.strokeStyle = "black";
-    ctx.fillStyle = this.color;
+    ctx.fillStyle = color;
     ctx.arc(position.x, position.y, 5, 0, 2 * Math.PI, false);
     ctx.fill();
     ctx.stroke();
