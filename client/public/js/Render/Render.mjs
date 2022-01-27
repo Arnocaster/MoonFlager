@@ -34,12 +34,9 @@ export default class render {
 
     //!Render each entities/object of the world
     if (world) {
-       Object.keys(world).forEach(type => {
-         const entities = world[type];
-         entities.forEach(entitie => {
-           entitie.render(ctx);
-         })
-       });
+      world.forEach(entity =>{
+        entity.render(ctx,entity.position);
+      })
     }
   }
 }

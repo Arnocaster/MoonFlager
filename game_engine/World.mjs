@@ -11,7 +11,7 @@ export default class World {
   createPlayer(socket) {
     const player = entityFactory(this.world, 'player', socket);
     const flag = this.createEntity('flag');
-    player.equip(flag);
+    player.equip(player,flag);
     return player;
   }
 
@@ -72,8 +72,22 @@ export default class World {
 
 updateWorld(newWorld) {
   if (newWorld) {
-    //Server side
-    this.world = newWorld;
+    //Client side
+    const oldEntitiesIds = this.world.map(entity => entity.id);
+    const newEntitiesIds = newWorld.map(entity => entity.id);
+
+    const lostEntities = this.world.filter(entity => !newEntitiesIds.includes(entity.id));
+    const newEntities = newWorld.filter(entity => !oldEntitiesIds.includes(entity.id));
+    
+    lostEntities.forEach(entity =>{entity.destroy()});
+
+    newEntities.forEach(entity => {
+      if(entity.type === "player"){
+        this.createPlayer(entity.socket);
+      } else {
+        this.createEntity(entity.type);
+      }
+    });
     this.actionsBuffer = [];
   }
   this.processActions();

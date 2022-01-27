@@ -1,17 +1,12 @@
 export function actions(params, newEntity) {
   const actionsComponent = {
     equip: (entity,what) => {
-      // const whatEntity = entity.findBy({ id: what.id });
-      // whatEntity ? whatEntity.destroy() : console.log('No index');
-      // entity.equipped = what;
+      entity.equipped = what;
+      what.destroy();
     },
 
     use: (entity) => {
       entity.equipped.usage();
-    },
-
-    usage: (entity) => {
-      entity.drop();
     },
 
     drop: (entity) => {

@@ -36,7 +36,7 @@ export default function Network(io) {
   const run = (start) => {
     setInterval(()=>{
       const newWorld = serverWorld.updateWorld();
-      //console.log(newWorld);
+      console.log(newWorld);
       io.emit('world_update',newWorld);
     },refreshRate)
 
