@@ -4,7 +4,11 @@ import World from '../../game_engine/World.mjs'
 export default function Network(io) {
   const serverWorld = new World();
   const socket = null;
-  const refreshRate = 1000;
+  //std 20, debug 3
+  const worldRefreshRate = 120;
+  const newtWorkRefreshRate = 120;
+  let lastRefresh = Date.now();
+
 
   io.on('connection', (socket) => {
     console.log(`New connection with Id : ${socket.id} and Ip : ${socket.handshake.address}`);
@@ -22,20 +26,27 @@ export default function Network(io) {
     });
 
     socket.on('player_actions', (data) => {
-      serverWorld.actionsBuffer.push({ socket: socket.id, data });
+      console.log('Server Push to GameEngine ActionsBuffer')
+      serverWorld.addActionToBuffer({ socket: socket.id, data : data.map(action => action.value) });
     });
+    
+    socket.on('time_request',(time_req)=>{
+      io.to(socket.id).emit('time_response', { time_req, time_res: Date.now()});
+    })
 
     socket.on('ping_request', (ping_req) => {
       io.to(socket.id).emit('ping_response', { ping_req, ping_res: Date.now() });
     });
 
   });
-
+  //NetWorldRefreshRate : Update world is refreshed independently of World send to client;
   const run = (start) => {
-    setInterval(()=>{
-      const newWorld = serverWorld.updateWorld();
-      io.emit('world_update',newWorld);
-    },refreshRate)
+    const newWorld = serverWorld.updateWorld();
+    //if(Date.now()-lastRefresh > 1000/newtWorkRefreshRate){
+    io.emit('world_update',newWorld);
+    //lastRefresh = Date.now();
+    //}
+    setTimeout(()=>{run();},1000/worldRefreshRate);
 
   }
 

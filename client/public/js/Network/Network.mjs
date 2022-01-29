@@ -6,6 +6,8 @@ export default class Network {
     this.latencyRate = 100;
     this.latencyHistory  = 2000;
     this.debug_slowClient = false;
+    this.timeSync = [];
+    this.offsetTime = 0;
 
     this.tempWorld = null;
      
@@ -18,6 +20,15 @@ export default class Network {
           this.latency.pop();
         }
       });
+
+      this.socket.on('time_response',(obj)=>{
+        let offset = Date.now() - obj.time_req;
+        this.timeSync.push(offset);
+        let timeTemp = [...this.timeSync].sort((a,b)=> a-b);
+        const middle = Math.floor(this.timeSync.length/2);
+        this.offsetTime = (this.timeSync.length % 2 !== 0) ? this.timeSync[middle] : (this.timeSync[middle-1] + this.timeSync[middle])/2;
+        //console.log(this.offsetTime);
+      });
       //! NEED BUFFER WORLD BEFORE UPDATE
       this.socket.on('world_update', (newWorld) => {
         //console.log(newWorld);
@@ -29,7 +40,6 @@ export default class Network {
   getTempWorld(){
     if (this.tempWorld !== null && this.tempWorld.length > 0){
     const tempWorld = this.tempWorld;
-    
     this.tempWorld = [];
     return tempWorld
     }
@@ -40,9 +50,12 @@ export default class Network {
     this.socket.emit(type,data);
   }
 
-  sendActions(actions){
-    if (actions.length > 0){
-    this.socket.emit('player_actions',actions);
+  requestTime(){
+    this.socket.emit('time_request',Date.now());
+  }
+  sendActions(lastActions){
+    if (lastActions.length > 0){
+      this.socket.emit('player_actions',lastActions);
     }
   }
 

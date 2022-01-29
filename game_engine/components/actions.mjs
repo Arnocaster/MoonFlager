@@ -1,5 +1,6 @@
 export function actions(params, newEntity) {
   const actionsComponent = {
+    cooldown : {equip : 50, use : 50,drop : 50},
     equip: (entity,what) => {
       entity.equipped = {...what};
       what.destroy();
@@ -11,7 +12,6 @@ export function actions(params, newEntity) {
     },
 
     drop: (entity) => {
-      console.log(entity)
       if (entity.equipped){
       //!!!! SUPPRIMER LA SHALLOW COPY POUR QUE L'OBJET SUIVE LE JOUEUR;
       entity.equipped.position = {...entity.position};
@@ -28,6 +28,7 @@ export function actions(params, newEntity) {
     Object.keys(params.actions).forEach(param => {
       actions[param] = actionsComponent[param];
     });
+    actions.cooldown = actionsComponent.cooldown;
     return actions
   }
 

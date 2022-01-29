@@ -60,7 +60,13 @@ export default function entityFactory(world,type,param) {
         //If it's a component
         if (Object.keys(Components).includes(param)){
         const props = Components[param](EntityRecipe,newEntity);
-        Object.keys(props).forEach(prop => {newEntity[prop]=props[prop]});
+        console.log(Components[param].cooldown);
+        Object.keys(props).forEach(prop => {
+          newEntity[prop]={...props[prop]}; 
+          //newEntity.cooldown[prop] = props.cooldown[prop];
+          
+        });
+        
         }
        
       });
@@ -71,7 +77,6 @@ export default function entityFactory(world,type,param) {
       //newEntity.move ? delete newEntity.move : '';
 
       (!param.id)? newEntity.id = uniqueId() : newEntity.id = param.id;
-      console.log(param.socket);
       (param.socket) ? newEntity.socket = param.socket : '';
 
       console.log('new :',newEntity);
