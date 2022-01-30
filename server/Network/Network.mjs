@@ -5,7 +5,7 @@ export default function Network(io) {
   const serverWorld = new World();
   const socket = null;
   //std 20, debug 3
-  const worldRefreshRate = 20;
+  const worldRefreshRate = 3;
   const newtWorkRefreshRate = 120;
   let lastRefresh = Date.now();
 
@@ -26,8 +26,8 @@ export default function Network(io) {
     });
 
     socket.on('player_actions', (data) => {
-      console.log('Server Push to GameEngine ActionsBuffer')
-      serverWorld.addActionToBuffer({ socket: socket.id, data : data.map(action => action.value) });
+      //console.log('Server Push to GameEngine',data);
+      serverWorld.addActionToBuffer({ socket: socket.id, data});
     });
     
     socket.on('time_request',(time_req)=>{

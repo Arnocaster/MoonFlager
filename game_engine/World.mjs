@@ -4,7 +4,6 @@ export default class World {
   constructor(socket) {
     this.world = [];
     this.countId = 0;
-    this.actionsBuffer = [];
     this.socket = socket || 'server';
   }
   //!!! WORLD.PUSH IS NOT A FUNCTION, PB DE SCOPE RETURN,FONCTION.0
@@ -47,76 +46,62 @@ export default class World {
   }
 
   addActionToBuffer(clientActions) {
-    //console.log('action', clientActions);
-    const newAction = { value: null, timeStart: Date.now() };
-    const newStack = {socket : clientActions.socket,actions:null};
-    const stackExist = this.actionsBuffer.find(actionBuffer => actionBuffer.socket === clientActions.socket);
-    clientActions.data.forEach(action => {
-       if (!stackExist){
-         const newStackCopy = {...newStack};
-         const newActionCopy = {...newAction};
-         newActionCopy.value = action;
-         newStackCopy.actions = [newActionCopy];
-         this.actionsBuffer.push(newStackCopy);
-       } else {
-        const actionExist = stackExist.actions.find(act => act.value === action);
-        if (actionExist) {
-              actionExist.timeStart = Date.now();
-              return;
-            } else {
-              const newActionCopy = {...newAction};
-              newActionCopy.value = action;
-              stackExist.actions.push(newActionCopy);
-            }
-       }
-
-    });
-
+    const entityElt = this.findBy({ socket: clientActions.socket });
+    entityElt.actionBuffer.push(clientActions.data[0]);
   }
 
-  processActions() {
-    (this.actionsBuffer.length > 0) ? console.log('actionsBuffer', this.actionsBuffer) : '';
+  processActions(bufferWorld) {
+    console.log('1 LOOOOOOOOOOOOOOOOOOOOOOOOOOOOP ---');
+    for (const entity of this.world) {
+      //For each entity
+      //CLIENT ONLY
+      if (bufferWorld) {
+        const buffEnt = bufferWorld.find(buffEntity => buffEntity.id === entity.id);
+        //UPDATE POSITION
+        entity.position = buffEnt.position;
+        console.log((entity.socket === this.socket), entity.socket, this.socket);
+        if (entity.socket === this.socket) {
+          //For each action in client side
+          console.log(entity.actionBuffer);
+          entity.actionBuffer = entity.actionBuffer.filter(stack => stack.inputCount >= buffEnt.lastProcessedAction);
+          entity.actionBuffer.forEach((stack, index) => {
+            // console.log('stack',stack);
+             if (stack.deltaTs > 39 / 1000) {
+               stack.actions.forEach(action => entity[action](entity,stack.deltaTs));
+               entity.actionBuffer.splice(index,1);
+               if (index === entity.actionBuffer.length - 1) { entity.lastProcessedAction = stack.inputCount }
+             }
+            });
+          console.log(entity.actionBuffer);
+        }
 
-
-    if (this.actionsBuffer.length > 0) {
-      //Met a jour le buffer avec les actions terminées;
-        this.actionsBuffer.forEach((stack,index) => {
-        const entity = this.findBy({ socket: stack.socket });
-        stack.actions.forEach((action,indexAct)=>{
-          if (Date.now() - action.timeStart > entity.cooldown[action.value]){
-            stack.actions.splice(stack.actions[indexAct],1);
-            (stack.actions.length < 1) ? this.actionsBuffer.splice(this.actionsBuffer[index],1) :'';
-          }
-        });
-      });
-    }
-
-    
-    if (this.actionsBuffer){
-      for (const stackAction of this.actionsBuffer) {
-        //Find entity and tell it to update
-        const entity = this.findBy({ socket: stackAction.socket });
-        if (!entity) { return console.error(`Entity not found, action can't be processed`) }
-        stackAction.actions.forEach(newAction => {
-          entity[newAction.value](entity);
-          console.log(entity);
-          console.log('process',entity[newAction.value]);
-        });
       }
+      //END CLIENT PART
+      //console.log(entity.actionBuffer)
+      entity.actionBuffer.forEach((stack, index) => {
+        // console.log('stack',stack);
+        if (stack.deltaTs > 39 / 1000) {
+          stack.actions.forEach(action => entity[action](entity, stack.deltaTs));
+          entity.actionBuffer.splice(index, 1);
+          if (index === entity.actionBuffer.length - 1) { entity.lastProcessedAction = stack.inputCount }
+        }
+      });
+
+      //(this.socket === 'server') ? entity.actionBuffer = [] : '';
+
+
     }
-    
-    //this.actionsBuffer = [];
   }
-  
-  
-  updateWorld(newWorld) {
-    if (newWorld) {
-      //Client side
+
+
+  updateWorld(bufferWorld, bufferInput) {
+    if (bufferWorld) {
+      //Client side with authoritative world sended
       const oldEntitiesIds = this.world.map(entity => entity.id);
-      const newEntitiesIds = newWorld.map(entity => entity.id);
+      const newEntitiesIds = bufferWorld.map(entity => entity.id);
 
       const lostEntities = this.world.filter(entity => !newEntitiesIds.includes(entity.id));
-      const newEntities = newWorld.filter(entity => !oldEntitiesIds.includes(entity.id));
+      const newEntities = bufferWorld.filter(entity => !oldEntitiesIds.includes(entity.id));
 
       lostEntities.forEach(entity => { entity.destroy() });
       newEntities.forEach(entity => {
@@ -127,14 +112,8 @@ export default class World {
         }
       });
 
-      newWorld.forEach(entity => {
-        let oldEnt = this.findBy({ id: entity.id });
-        if (oldEnt) {
-          oldEnt = Object.assign(oldEnt, entity);
-        }
-      });
     }
-    this.processActions();
+    this.processActions(bufferWorld);
     //console.log(this.display({position:''}))
     return this.world;
   }

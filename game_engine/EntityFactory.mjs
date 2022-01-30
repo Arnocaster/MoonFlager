@@ -5,6 +5,9 @@ import * as Components from './components/Components.mjs'
 export default function entityFactory(world,type,param) {
     const newEntity = {
       type : type,
+      //positionBuffer : [],
+      actionBuffer : [],
+      lastProcessedAction : 0
     }
 
     const uniqueId = ()=>{
@@ -65,7 +68,10 @@ export default function entityFactory(world,type,param) {
               newEntity[prop]=props[prop];
               (!newEntity['cooldown']) ? newEntity['cooldown'] = {} : '';
               newEntity['cooldown'][prop] = props.cooldown[prop];
+            } else {
+              newEntity[prop]=props[prop];
             }
+
         });
           }
          

@@ -9,7 +9,7 @@ export default class Network {
     this.timeSync = [];
     this.offsetTime = 0;
 
-    this.tempWorld = null;
+    this.bufferWorld = null;
      
       this.socket.on('ping_response', (res) => {
         res.ping_end = Date.now();
@@ -32,16 +32,16 @@ export default class Network {
       //! NEED BUFFER WORLD BEFORE UPDATE
       this.socket.on('world_update', (newWorld) => {
         //console.log(newWorld);
-        this.tempWorld = newWorld;
+        this.bufferWorld = newWorld;
       });
   }
 
 
-  getTempWorld(){
-    if (this.tempWorld !== null && this.tempWorld.length > 0){
-    const tempWorld = this.tempWorld;
-    this.tempWorld = [];
-    return tempWorld
+  getbufferWorld(){
+    if (this.bufferWorld.length > 0){
+    const bufferWorld = this.bufferWorld;
+    this.bufferWorld = [];
+    return bufferWorld
     }
   }
 
@@ -53,10 +53,8 @@ export default class Network {
   requestTime(){
     this.socket.emit('time_request',Date.now());
   }
-  sendActions(lastActions){
-    if (lastActions.length > 0){
-      this.socket.emit('player_actions',lastActions);
-    }
+  sendActions(bufferInput){
+      this.socket.emit('player_actions',bufferInput);
   }
 
   ping() {

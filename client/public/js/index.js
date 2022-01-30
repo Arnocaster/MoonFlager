@@ -7,9 +7,9 @@ import { io } from './socket.io.esm.min.js'
 class App {
   constructor(socket) {
     //Std : 60 , debug 3, 
-    this.refreshRate = 60;
+    this.refreshRate = 3;
     this.network = new Network(socket);
-    this.clientWorld = new World(socket);
+    this.world = new World(socket.id);
     this.inputs = new Inputs();
     this.render = new Render();
     this.startTime = Date.now();
@@ -18,22 +18,25 @@ class App {
       this.update();
     }, (this.refreshRate));
   }
-     update() {
+  update() {
     this.inputs.inputManager();
-    const actions = this.inputs.getActions();
+    const actions = this.inputs.getBufferInput();
     if (actions.length > 0) {
       this.network.sendActions(actions);
-      this.clientWorld.addActionToBuffer({ socket: this.network.socket.id, data: actions.map(action => action.value) });
+      //APPLY INPUT (PREDICTION);
+      this.world.addActionToBuffer({ socket: this.network.socket.id, data: actions});
     }
-    const newWorld = this.network.getTempWorld();
-    (newWorld) ? this.clientWorld.updateWorld(newWorld) : this.clientWorld.updateWorld();
+
+
+    const bufferWorlds = this.network.getbufferWorld();
+    this.world.updateWorld(bufferWorlds);
     this.network.ping();
-    this.render.render(this.clientWorld.world, this.network.latency);
+    this.render.render(this.world.world, this.network.latency);
   }
 
   async synchroniseTime() {
     let timeSync = [];
-    let loop=0;
+    let loop = 0;
     const timeReq = setInterval(() => {
       loop++;
       this.network.requestTime();
@@ -43,7 +46,7 @@ class App {
 
   run() {
     synchroniseTime();
-    setInterval(() => { update(); }, 1000/refreshRate);
+    setInterval(() => { update(); }, 1000 / refreshRate);
   }
 
 }

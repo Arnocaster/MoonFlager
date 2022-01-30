@@ -7,7 +7,7 @@ export function player() {
   position : {random : true},
   move : {type : 'human',
           speed : 5,
-          speed_rotation : 0.28},
+          speed_rotation : 0.25},
   color : `rgb(${parseInt(Math.random() * 255)}, 
                ${parseInt(Math.random() * 255)},
                ${parseInt(Math.random() * 255)})`,

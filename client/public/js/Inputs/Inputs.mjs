@@ -4,10 +4,11 @@ export default class Inputs {
   constructor() {
     this.lastInput = Date.now();
     this.inputs = [];
-    this.oldActions = [];
-    this.newActions = [];
-    this.netWorkActions = [];
+    this.bufferInput = [];
     this.addListeners(this.inputs);
+
+    this.inputCount = 0;
+    this.lastTs = Date.now();
   }
 
   addListeners(inputs) {
@@ -19,16 +20,21 @@ export default class Inputs {
       inputs[e.code] = false;
     });
   }
-  getActions() {
-    const newActions = this.newActions;
-    this.netWorkActions = this.newActions.flat();
-    (newActions.length > 0 ) ? this.oldActions.push(newActions) : '';
-    (this.oldActions.length>0) ? this.oldActions = this.oldActions.flat().filter(oldAction => Date.now() - oldAction.timeStart < oldAction.cooldown-2) : '';
-    this.newActions = [];
-    return this.netWorkActions;
+
+  resetBufferInput() {
+    this.bufferInput = [];
+  }
+
+  getBufferInput() {
+    const bufferInput = this.bufferInput;
+    this.bufferInput = [];
+    return bufferInput;
   }
 
   inputManager() {
+    const deltaTs = ( Date.now() -this.lastTs) / 1000;
+    
+
     let actions = [];
     if (this.inputs.ArrowUp || this.inputs.KeyW) {
       actions.push('moveForward');
@@ -45,14 +51,9 @@ export default class Inputs {
     if (this.inputs.KeyE) {
       actions.push('use');
     }
-    if (actions.length > 0) {
-
-      //actions =  ['moveFor','turnLeft']
-      
-      const oldValues = this.oldActions.map(oldAction => oldAction.value);
-      const newActions = actions.filter(newAction => !oldValues.includes(newAction));
-      newActions.forEach(newAction => this.newActions.push({cooldown : 5,timeStart : Date.now(),value : newAction}));
-    
+    if (actions.length > 0 && deltaTs > 40/1000) {
+      this.lastTs = Date.now();
+      this.bufferInput.push({inputCount : this.inputCount++, deltaTs, actions});
       return;
     }
   }
