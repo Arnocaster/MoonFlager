@@ -59,17 +59,17 @@ export default function entityFactory(world,type,param) {
         
         //If it's a component
         if (Object.keys(Components).includes(param)){
-        const props = Components[param](EntityRecipe,newEntity);
-        console.log(Components[param].cooldown);
-        Object.keys(props).forEach(prop => {
-          newEntity[prop]={...props[prop]}; 
-          //newEntity.cooldown[prop] = props.cooldown[prop];
-          
+          const props = Components[param](EntityRecipe,newEntity);
+          Object.keys(props).forEach(prop => { 
+            if (typeof props[prop] === 'function') { 
+              newEntity[prop]=props[prop];
+              (!newEntity['cooldown']) ? newEntity['cooldown'] = {} : '';
+              newEntity['cooldown'][prop] = props.cooldown[prop];
+            }
         });
-        
-        }
-       
-      });
+          }
+         
+        });
 
      
 

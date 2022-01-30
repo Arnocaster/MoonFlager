@@ -5,7 +5,7 @@ export default function Network(io) {
   const serverWorld = new World();
   const socket = null;
   //std 20, debug 3
-  const worldRefreshRate = 120;
+  const worldRefreshRate = 20;
   const newtWorkRefreshRate = 120;
   let lastRefresh = Date.now();
 

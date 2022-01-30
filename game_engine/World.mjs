@@ -11,7 +11,7 @@ export default class World {
   createPlayer(socket, id) {
     const player = entityFactory(this.world, 'player', { socket, id });
     const flag = this.createEntity('flag');
-    //player.equip.function(player, flag);
+    player.equip(player, flag);
     return player;
   }
 
@@ -83,7 +83,7 @@ export default class World {
         this.actionsBuffer.forEach((stack,index) => {
         const entity = this.findBy({ socket: stack.socket });
         stack.actions.forEach((action,indexAct)=>{
-          if (Date.now() - action.timeStart > entity[action.value].props.cooldown){
+          if (Date.now() - action.timeStart > entity.cooldown[action.value]){
             stack.actions.splice(stack.actions[indexAct],1);
             (stack.actions.length < 1) ? this.actionsBuffer.splice(this.actionsBuffer[index],1) :'';
           }
@@ -98,9 +98,9 @@ export default class World {
         const entity = this.findBy({ socket: stackAction.socket });
         if (!entity) { return console.error(`Entity not found, action can't be processed`) }
         stackAction.actions.forEach(newAction => {
-          //entity[newAction.value].function(entity);
+          entity[newAction.value](entity);
           console.log(entity);
-          console.log('process',entity[newAction.value].function);
+          console.log('process',entity[newAction.value]);
         });
       }
     }

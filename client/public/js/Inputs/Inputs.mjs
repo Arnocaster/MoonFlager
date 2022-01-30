@@ -51,7 +51,7 @@ export default class Inputs {
       
       const oldValues = this.oldActions.map(oldAction => oldAction.value);
       const newActions = actions.filter(newAction => !oldValues.includes(newAction));
-      newActions.forEach(newAction => this.newActions.push({cooldown : 50,timeStart : Date.now(),value : newAction}));
+      newActions.forEach(newAction => this.newActions.push({cooldown : 5,timeStart : Date.now(),value : newAction}));
     
       return;
     }
