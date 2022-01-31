@@ -5,6 +5,8 @@ export default class World {
     this.world = [];
     this.countId = 0;
     this.socket = socket || 'server';
+    this.prediction = [];
+    this.actionBuffer = [];
   }
   //!!! WORLD.PUSH IS NOT A FUNCTION, PB DE SCOPE RETURN,FONCTION.0
   createPlayer(socket, id) {
@@ -46,51 +48,101 @@ export default class World {
   }
 
   addActionToBuffer(clientActions) {
-    const entityElt = this.findBy({ socket: clientActions.socket });
-    entityElt.actionBuffer.push(clientActions.data[0]);
+    if (this.socket === 'server') {
+      clientActions.data[0]['socket'] = clientActions.socket;
+      this.actionBuffer.push(clientActions.data[0]);
+      console.log("push server", this.actionBuffer);
+    } else {
+      this.prediction.push(clientActions.data[0]);
+      console.log("push client", this.prediction, this.actionBuffer);
+    }
   }
 
   processActions(bufferWorld) {
-    console.log('1 LOOOOOOOOOOOOOOOOOOOOOOOOOOOOP ---');
-    for (const entity of this.world) {
-      //For each entity
-      //CLIENT ONLY
+    console.log('------------------------');
+
+    //!CLIENT
+    if (this.socket !== "server") {
       if (bufferWorld) {
-        const buffEnt = bufferWorld.find(buffEntity => buffEntity.id === entity.id);
-        //UPDATE POSITION
-        entity.position = buffEnt.position;
-        console.log((entity.socket === this.socket), entity.socket, this.socket);
-        if (entity.socket === this.socket) {
-          //For each action in client side
-          console.log(entity.actionBuffer);
-          entity.actionBuffer = entity.actionBuffer.filter(stack => stack.inputCount >= buffEnt.lastProcessedAction);
-          entity.actionBuffer.forEach((stack, index) => {
-            // console.log('stack',stack);
-             if (stack.deltaTs > 39 / 1000) {
-               stack.actions.forEach(action => entity[action](entity,stack.deltaTs));
-               entity.actionBuffer.splice(index,1);
-               if (index === entity.actionBuffer.length - 1) { entity.lastProcessedAction = stack.inputCount }
-             }
-            });
-          console.log(entity.actionBuffer);
+        for (const buffEntity of bufferWorld) {
+          const entity = this.findBy({ id: buffEntity.id });
+          entity.position = buffEntity.position;
+          if (buffEntity.socket === this.socket) {
+           
+            
+            this.prediction = this.prediction.filter(stack => stack.inputCount > buffEntity.lastProcessedAction);
+            //this.prediction = [];
+          }
         }
-
       }
-      //END CLIENT PART
-      //console.log(entity.actionBuffer)
-      entity.actionBuffer.forEach((stack, index) => {
-        // console.log('stack',stack);
-        if (stack.deltaTs > 39 / 1000) {
-          stack.actions.forEach(action => entity[action](entity, stack.deltaTs));
-          entity.actionBuffer.splice(index, 1);
-          if (index === entity.actionBuffer.length - 1) { entity.lastProcessedAction = stack.inputCount }
-        }
+      this.prediction.forEach((stack, index) => {
+        const entity = this.findBy({ socket: this.socket });
+        console.log('processed : this stack',stack.inputCount,'lastprocessed', entity.lastProcessedAction,'actionbufferloop', index);
+        stack.actions.forEach(action => entity[action](entity, stack.deltaTs));
       });
-
-      //(this.socket === 'server') ? entity.actionBuffer = [] : '';
-
+      this.prediction = [];
+    }
+    //!SERVER
+    if (this.socket === "server") {
+      let index = 0;
+      for (let stack of this.actionBuffer) {
+        const entity = this.findBy({ socket: stack.socket });
+        stack.actions.forEach(action => entity[action](entity, stack.deltaTs));
+        entity.lastProcessedAction = stack.inputCount;
+        console.log('processed : this stack',stack.inputCount,'lastprocessed', entity.lastProcessedAction,'actionbufferloop', index);
+        index++;
+      };
+      this.actionBuffer = [];
 
     }
+
+
+    // for (const entity of this.world) {
+    //   //For each entity
+    //   //CLIENT ONLY
+    //   // if (bufferWorld) {
+    //   //   const buffEnt = bufferWorld.find(buffEntity => buffEntity.id === entity.id);
+    //   //   // //UPDATE POSITION
+    //   //    entity.position = buffEnt.position;
+    //   //   // console.log((entity.socket === this.socket), entity.socket, this.socket);
+    //   //   if (entity.socket === this.socket) {
+    //   //     //For each action in client side  
+    //   //      console.log('pendingInputs before',this.pendingInputs);
+    //   //      this.pendingInputs = this.pendingInputs.filter(stack => stack.inputCount > buffEnt.lastProcessedAction);
+    //   //      this.pendingInputs.forEach((stack, index) => {
+    //   //       if (stack.deltaTs > 20 / 1000) {
+    //   //         stack.actions.forEach(action => entity[action](entity, stack.deltaTs));
+    //   //       }
+    //   //       entity.actionBuffer.splice(0,index+1);
+    //   //      });
+
+
+    //   //      console.log('pendingInputs',this.pendingInputs,buffEnt.actionBuffer,buffEnt.lastProcessedAction);
+
+    //   //   }
+    //   //   return;
+    //   // }
+    //   // //END CLIENT PART
+    //   // console.log(entity.actionBuffer)
+    //   // entity.actionBuffer.forEach((stack, index) => {
+    //   //   if (stack.deltaTs > 20 / 1000) {
+    //   //     stack.actions.forEach(action => entity[action](entity, stack.deltaTs));
+
+    //   //      if (index === entity.actionBuffer.length - 1) { 
+    //   //        entity.lastProcessedAction = stack.inputCount; 
+    //   //   //     entity.actionBuffer.splice(0,index);}
+    //   //      }
+
+    //   //   }
+    //   //   entity.actionBuffer.splice(0,index+1);
+    //   //   console.log(entity.actionBuffer)
+    //   // });
+
+
+    //   //(this.socket === 'server') ? entity.actionBuffer = [] : '';
+
+
+    // }
   }
 
 

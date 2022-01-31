@@ -5,13 +5,15 @@ export function move() {
     acceleration : 0,
     moveForward: (entity,deltaTs) => {
       //! NEED TO ADD input_press_time near speed: x+= input.presstime * speed
-        entity.position.x += (Math.cos(entity.position.angle) * (entity.move.speed));
-        entity.position.y += (Math.sin(entity.position.angle) * (entity.move.speed));
+        // entity.position.x += (Math.cos(entity.position.angle) * (entity.move.speed));
+        // entity.position.y += (Math.sin(entity.position.angle) * (entity.move.speed));
+        entity.position.x += 4;
         entity.checkCollisions(entity);
       },
     moveBackward: (entity,deltaTs) => {
-        entity.position.x -= (Math.cos(entity.position.angle) * (entity.move.speed));
-        entity.position.y -= (Math.sin(entity.position.angle) * (entity.move.speed));
+        // entity.position.x -= (Math.cos(entity.position.angle) * (entity.move.speed));
+        // entity.position.y -= (Math.sin(entity.position.angle) * (entity.move.speed));
+        entity.position.x -= 4;
         entity.checkCollisions(entity);
       },
     turnLeft: (entity,deltaTs) => {

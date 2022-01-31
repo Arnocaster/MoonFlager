@@ -7,7 +7,7 @@ import { io } from './socket.io.esm.min.js'
 class App {
   constructor(socket) {
     //Std : 60 , debug 3, 
-    this.refreshRate = 3;
+    this.refreshRate = 60;
     this.network = new Network(socket);
     this.world = new World(socket.id);
     this.inputs = new Inputs();
@@ -19,6 +19,8 @@ class App {
     }, (this.refreshRate));
   }
   update() {
+    const bufferWorlds = this.network.getbufferWorld();
+    this.world.updateWorld(bufferWorlds);
     this.inputs.inputManager();
     const actions = this.inputs.getBufferInput();
     if (actions.length > 0) {
@@ -26,10 +28,6 @@ class App {
       //APPLY INPUT (PREDICTION);
       this.world.addActionToBuffer({ socket: this.network.socket.id, data: actions});
     }
-
-
-    const bufferWorlds = this.network.getbufferWorld();
-    this.world.updateWorld(bufferWorlds);
     this.network.ping();
     this.render.render(this.world.world, this.network.latency);
   }

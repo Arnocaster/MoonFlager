@@ -51,7 +51,7 @@ export default class Inputs {
     if (this.inputs.KeyE) {
       actions.push('use');
     }
-    if (actions.length > 0 && deltaTs > 40/1000) {
+    if (actions.length > 0 && deltaTs > 1/40) {
       this.lastTs = Date.now();
       this.bufferInput.push({inputCount : this.inputCount++, deltaTs, actions});
       return;
