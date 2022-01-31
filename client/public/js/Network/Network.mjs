@@ -9,7 +9,7 @@ export default class Network {
     this.timeSync = [];
     this.offsetTime = 0;
 
-    this.bufferWorld = null;
+    this.bufferWorld = [];
      
       this.socket.on('ping_response', (res) => {
         res.ping_end = Date.now();

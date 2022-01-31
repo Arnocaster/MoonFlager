@@ -5,8 +5,7 @@ import * as Components from './components/Components.mjs'
 export default function entityFactory(world,type,param) {
     const newEntity = {
       type : type,
-      //positionBuffer : [],
-      actionBuffer : [],
+      bufferPosition : [],
       lastProcessedAction : 0
     }
 
