@@ -51,15 +51,15 @@ export default class World {
     if (this.socket === 'server') {
       clientActions.data[0]['socket'] = clientActions.socket;
       this.actionBuffer.push(clientActions.data[0]);
-      console.log("push server", this.actionBuffer);
+      //console.log("push server", this.actionBuffer);
     } else {
       this.prediction.push(clientActions.data[0]);
-      console.log("push client", this.prediction, this.actionBuffer);
+      //console.log("push client", this.prediction, this.actionBuffer);
     }
   }
 
   processActions(bufferWorld) {
-    console.log('------------------------');
+    //console.log('------------------------');
 
     //!CLIENT
     if (this.socket !== "server") {
@@ -68,17 +68,15 @@ export default class World {
           const entity = this.findBy({ id: buffEntity.id });
           entity.position = buffEntity.position;
           if (buffEntity.socket === this.socket) {
-           
-            
             this.prediction = this.prediction.filter(stack => stack.inputCount > buffEntity.lastProcessedAction);
-            //this.prediction = [];
           }
         }
       }
       this.prediction.forEach((stack, index) => {
         const entity = this.findBy({ socket: this.socket });
-        console.log('processed : this stack',stack.inputCount,'lastprocessed', entity.lastProcessedAction,'actionbufferloop', index);
+        if (entity){
         stack.actions.forEach(action => entity[action](entity, stack.deltaTs));
+        }
       });
       this.prediction = [];
     }
@@ -89,60 +87,10 @@ export default class World {
         const entity = this.findBy({ socket: stack.socket });
         stack.actions.forEach(action => entity[action](entity, stack.deltaTs));
         entity.lastProcessedAction = stack.inputCount;
-        console.log('processed : this stack',stack.inputCount,'lastprocessed', entity.lastProcessedAction,'actionbufferloop', index);
         index++;
       };
       this.actionBuffer = [];
-
     }
-
-
-    // for (const entity of this.world) {
-    //   //For each entity
-    //   //CLIENT ONLY
-    //   // if (bufferWorld) {
-    //   //   const buffEnt = bufferWorld.find(buffEntity => buffEntity.id === entity.id);
-    //   //   // //UPDATE POSITION
-    //   //    entity.position = buffEnt.position;
-    //   //   // console.log((entity.socket === this.socket), entity.socket, this.socket);
-    //   //   if (entity.socket === this.socket) {
-    //   //     //For each action in client side  
-    //   //      console.log('pendingInputs before',this.pendingInputs);
-    //   //      this.pendingInputs = this.pendingInputs.filter(stack => stack.inputCount > buffEnt.lastProcessedAction);
-    //   //      this.pendingInputs.forEach((stack, index) => {
-    //   //       if (stack.deltaTs > 20 / 1000) {
-    //   //         stack.actions.forEach(action => entity[action](entity, stack.deltaTs));
-    //   //       }
-    //   //       entity.actionBuffer.splice(0,index+1);
-    //   //      });
-
-
-    //   //      console.log('pendingInputs',this.pendingInputs,buffEnt.actionBuffer,buffEnt.lastProcessedAction);
-
-    //   //   }
-    //   //   return;
-    //   // }
-    //   // //END CLIENT PART
-    //   // console.log(entity.actionBuffer)
-    //   // entity.actionBuffer.forEach((stack, index) => {
-    //   //   if (stack.deltaTs > 20 / 1000) {
-    //   //     stack.actions.forEach(action => entity[action](entity, stack.deltaTs));
-
-    //   //      if (index === entity.actionBuffer.length - 1) { 
-    //   //        entity.lastProcessedAction = stack.inputCount; 
-    //   //   //     entity.actionBuffer.splice(0,index);}
-    //   //      }
-
-    //   //   }
-    //   //   entity.actionBuffer.splice(0,index+1);
-    //   //   console.log(entity.actionBuffer)
-    //   // });
-
-
-    //   //(this.socket === 'server') ? entity.actionBuffer = [] : '';
-
-
-    // }
   }
 
 

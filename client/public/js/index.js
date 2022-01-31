@@ -16,7 +16,7 @@ class App {
     this.synchroniseTime();
     setInterval(() => {
       this.update();
-    }, (this.refreshRate));
+    }, (1000/this.refreshRate));
   }
   update() {
     const bufferWorlds = this.network.getbufferWorld();
@@ -40,11 +40,6 @@ class App {
       this.network.requestTime();
       (loop > 4) ? clearInterval(timeReq) : '';
     }, 1000);
-  }
-
-  run() {
-    synchroniseTime();
-    setInterval(() => { update(); }, 1000 / refreshRate);
   }
 
 }
