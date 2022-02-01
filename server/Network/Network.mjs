@@ -5,9 +5,20 @@ export default function Network(io) {
   const serverWorld = new World();
   const socket = null;
   //std 20, debug 3
-  const worldRefreshRate = 3;
-  const newtWorkRefreshRate = 120;
+  const worldRefreshRate = 30;
+  const newtWorkRefreshRate = 10;
   let lastRefresh = Date.now();
+
+  
+  const synchroniseTime = async () => {
+    let timeSync = [];
+    let loop = 0;
+    const timeReq = setInterval(() => {
+      loop++;
+      this.network.requestTime();
+      (loop > 4) ? clearInterval(timeReq) : '';
+    }, 1000);
+  }
 
 
   io.on('connection', (socket) => {
@@ -42,10 +53,10 @@ export default function Network(io) {
   //NetWorldRefreshRate : Update world is refreshed independently of World send to client;
   const run = (start) => {
     const newWorld = serverWorld.updateWorld();
-    //if(Date.now()-lastRefresh > 1000/newtWorkRefreshRate){
+    if(Date.now()-lastRefresh > 1000/newtWorkRefreshRate){
     io.emit('world_update',newWorld);
-    //lastRefresh = Date.now();
-    //}
+    lastRefresh = Date.now();
+    }
     setTimeout(()=>{run();},1000/worldRefreshRate);
 
   }

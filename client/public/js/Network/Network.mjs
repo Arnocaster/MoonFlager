@@ -1,14 +1,17 @@
 export default class Network {
   constructor(socket) {
     this.socket = socket;
+    this.started = false;
+    this.initWorld = 0;
+
     this.latency = [];
     this.lastPing = {ping_req : Date.now()};
     this.latencyRate = 100;
     this.latencyHistory  = 2000;
     this.debug_slowClient = false;
+
     this.timeSync = [];
     this.offsetTime = 0;
-
     this.bufferWorld = [];
      
       this.socket.on('ping_response', (res) => {
@@ -31,6 +34,11 @@ export default class Network {
       });
       //! NEED BUFFER WORLD BEFORE UPDATE
       this.socket.on('world_update', (newWorld) => {
+        if (!this.started){
+          this.initWorld++;
+          (this.initWorld > 3) ? this.started = true : '';
+          console.log(this.initWorld,this.started);
+        }
         //console.log(newWorld);
         this.bufferWorld = newWorld;
       });

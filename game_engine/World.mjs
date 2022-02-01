@@ -7,6 +7,7 @@ export default class World {
     this.socket = socket || 'server';
     this.prediction = [];
     this.actionBuffer = [];
+    this.serverRate = 0;
   }
   //!!! WORLD.PUSH IS NOT A FUNCTION, PB DE SCOPE RETURN,FONCTION.0
   createPlayer(socket, id) {
@@ -58,35 +59,40 @@ export default class World {
     }
   }
 
-  interpolatePosition(entity){
+  interpolatePosition(entity) {
     const now = Date.now();
     //!Approx, should be server rate??? Need to find a solution
-    const renderTs = now-20;
+    const renderTs = now-100;
     let buffer = entity.bufferPosition;
-    buffer.splice(0,buffer.length-2);
-    // while (buffer.length >= 2 && buffer[1][0] <= renderTs) {
-    //   buffer.shift();
-    // }
+    console.log(buffer,buffer[0].x-buffer[buffer.length-1].x);
+    if ((buffer[buffer.length-1].x-buffer[0].x !== 0
+        || buffer[buffer.length-1].y-buffer[0].y !== 0 
+        || buffer[buffer.length-1].angle-buffer[0].angle !== 0 )) {
+    buffer.splice(0, buffer.length - 2);
+    //console.log(buffer[0],buffer[1],buffer[2],buffer.length);
+
     //console.log('buffer',buffer[0].ts,buffer[1].ts,buffer[1].ts-buffer[0].ts,renderTs-buffer[0].ts,renderTs-buffer[1].ts);
-    // if (buffer[0].ts <= renderTs && buffer[1] <= renderTs){
-      const x0 =buffer[0].x;
-      const x1 = buffer[1].x;
+      const x0 = buffer[0].x;
+      const x1 = buffer[buffer.length-1].x;
       const y0 = buffer[0].y;
-      const y1 = buffer[1].y;
+      const y1 = buffer[buffer.length-1].y;
       const angle0 = buffer[0].angle;
-      const angle1 = buffer[1].angle;
+      const angle1 = buffer[buffer.length-1].angle;
       const t0 = buffer[0].ts;
-      const t1 = buffer[1].ts;
+      const t1 = buffer[buffer.length-1].ts;
       //
-      console.log('x0',x0,"+(x1-x0)",x1-x0,"*(renderTs-t0)",renderTs-t0,"/(t1-t0)",t1-t0 );
-      entity.position.x = x0 + (x1-x0) * (renderTs - t0) / (t1-t0);
-      entity.position.y = y0 + (y1-y0) * (renderTs - t0) / (t1-t0);
-      entity.position.angle = angle0 + (angle1-angle0) * (renderTs - t0) / (t1-t0);
-      console.log('Interpolated!!!!');
-     
-    // }
-    
-    return entity.position;
+      console.log('x0', x0, "+(x1-x0)", x1 - x0, "*(renderTs-t0)", renderTs - t0, "/(t1-t0)", t1 - t0);
+        entity.position.angle = angle0 + (angle1-angle0) * (renderTs - t0) / (t1-t0);
+        entity.position.x = x0 + (x1-x0) * (renderTs - t0) / (t1-t0);
+        entity.position.y = y0 + (y1-y0) * (renderTs - t0) / (t1-t0);
+        console.log('Interpolated!!!!');
+        //entity.bufferPosition.shift();
+        return entity;
+    } else {
+      entity.position = buffer[buffer.length-1];
+      entity.bufferPosition.splice(0,entity.bufferPosition.length-2);
+      return entity;
+    }
 
   }
 
@@ -101,24 +107,27 @@ export default class World {
           const entity = this.findBy({ id: buffEntity.id });
           //RECONCILIATION FILTER
           if (buffEntity.socket === this.socket) {
-            this.prediction = this.prediction.filter(stack => stack.inputCount > buffEntity.lastProcessedAction);
+            this.prediction = this.prediction.filter(stack => stack.inputCount >= buffEntity.lastProcessedAction);
           } else {
             buffEntity.position['ts'] = Date.now();
             entity.bufferPosition.push(buffEntity.position);
           }
         }
       }
-      this.world.forEach(entity =>{
-        if (entity.socket !== this.socket){
-        entity.position = this.interpolatePosition(entity);
+      //
+      this.world.forEach(entity => {
+        if (entity.socket !== this.socket) {
+          if (entity.bufferPosition.length > 0){
+          entity = this.interpolatePosition(entity);
+          }
         }
       });
-      
+
       //PREDICTION : every time - client entity only
       this.prediction.forEach((stack, index) => {
         const entity = this.findBy({ socket: this.socket });
-        if (entity){
-        stack.actions.forEach(action => entity[action](entity, stack.deltaTs));
+        if (entity) {
+          stack.actions.forEach(action => entity[action](entity, stack.deltaTs));
         }
       });
       this.prediction = [];

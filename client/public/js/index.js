@@ -10,13 +10,23 @@ class App {
     this.refreshRate = 60;
     this.network = new Network(socket);
     this.world = new World(socket.id);
+    this.server = new World();
     this.inputs = new Inputs();
     this.render = new Render();
     this.startTime = Date.now();
-    this.synchroniseTime();
-    setInterval(() => {
-      this.update();
-    }, (1000/this.refreshRate));
+    this.init();
+ 
+  }
+
+  init(){
+    if (this.network.started) {
+      console.log(this.network.started);
+      setInterval(() => {
+        this.update();
+      }, (1000 / this.refreshRate));
+      return;
+    }
+    setTimeout(()=>{this.init()},50);
   }
   update() {
     const bufferWorlds = this.network.getbufferWorld();
@@ -26,20 +36,11 @@ class App {
     if (actions.length > 0) {
       this.network.sendActions(actions);
       //APPLY INPUT (PREDICTION);
-      this.world.addActionToBuffer({ socket: this.network.socket.id, data: actions});
+      this.world.addActionToBuffer({ socket: this.network.socket.id, data: actions });
     }
     this.network.ping();
     this.render.render(this.world.world, this.network.latency);
-  }
-
-  async synchroniseTime() {
-    let timeSync = [];
-    let loop = 0;
-    const timeReq = setInterval(() => {
-      loop++;
-      this.network.requestTime();
-      (loop > 4) ? clearInterval(timeReq) : '';
-    }, 1000);
+    (bufferWorlds) ? this.render.render(bufferWorlds,undefined,true) : '';
   }
 
 }
