@@ -1,8 +1,10 @@
 import World from '../../game_engine/World.mjs'
+import PhysX from '../lib/physx-js-webidl.wasm.mjs';
 
 
-export default function Network(io) {
-  const serverWorld = new World();
+export default async function Network(io) {
+  const physX = PhysX;
+  const serverWorld = new World(null,physX);
   const socket = null;
   //std 20, debug 3
   const worldRefreshRate = 30;
@@ -26,7 +28,7 @@ export default function Network(io) {
     io.to(socket.id).emit('client_socket', socket.id);
     //INIT PLAYER
     const player = serverWorld.createPlayer(socket.id);
-    console.log('Server world after new connection', serverWorld.display({ type: '', id: '' }));
+    //console.log('Server world after new connection', serverWorld.display({ type: '', id: '' }));
     io.to(socket.id).emit('server_time', Date.now());
 
 
