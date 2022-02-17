@@ -1,5 +1,5 @@
-import * as Entities from './Entities/Entities.mjs'
-import * as Components from './components/Components.mjs'
+import * as Entities from './collections/Entities'
+import * as Components from './components/'
 
 
 export default function entityFactory(world,type,param) {
@@ -84,7 +84,7 @@ export default function entityFactory(world,type,param) {
       (!param.id)? newEntity.id = uniqueId() : newEntity.id = param.id;
       (param.socket) ? newEntity.socket = param.socket : '';
 
-      console.log('new :',newEntity);
+      //console.log('new :',newEntity);
       newEntity.addToWorld();
       return newEntity
     }

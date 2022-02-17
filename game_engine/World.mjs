@@ -1,13 +1,15 @@
 import entityFactory from "./EntityFactory.mjs";
+import physicEngine from "./physX/index.mjs";
 
 export default class World {
-  constructor(socket) {
+  constructor(socket,physX) {
     this.world = [];
     this.countId = 0;
     this.socket = socket || 'server';
     this.prediction = [];
     this.actionBuffer = [];
     this.serverRate = 0;
+    this.physx = new physicEngine(physX);
   }
   //!!! WORLD.PUSH IS NOT A FUNCTION, PB DE SCOPE RETURN,FONCTION.0
   createPlayer(socket, id) {
@@ -61,7 +63,7 @@ export default class World {
 
   interpolatePosition(entity) {
     const now = Date.now();
-    //!Approx, should be server rate??? Need to find a solution
+    //!Approx, should be server rate => Need to find a solution
     const renderTs = now-100;
     let buffer = entity.bufferPosition;
     console.log(buffer,buffer[0].x-buffer[buffer.length-1].x);
@@ -127,6 +129,7 @@ export default class World {
       this.prediction.forEach((stack, index) => {
         const entity = this.findBy({ socket: this.socket });
         if (entity) {
+          //!UPDATE PHYSX
           stack.actions.forEach(action => entity[action](entity, stack.deltaTs));
         }
       });
@@ -137,6 +140,7 @@ export default class World {
       let index = 0;
       for (let stack of this.actionBuffer) {
         const entity = this.findBy({ socket: stack.socket });
+        //!UPDATE PHYSX
         stack.actions.forEach(action => entity[action](entity, stack.deltaTs));
         entity.lastProcessedAction = stack.inputCount;
         index++;

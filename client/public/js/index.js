@@ -2,15 +2,17 @@ import Network from './Network/Network.mjs';
 import Inputs from './Inputs/Inputs.mjs';
 import Render from './Render/Render.mjs'
 import World from '/game-engine/World.mjs'
-import { io } from './socket.io.esm.min.js'
+import { io } from './lib/socket.io.esm.min.js'
+import PhysX from './lib/physx-js-webidl.wasm.mjs';
 
 class App {
   constructor(socket) {
     //Std : 60 , debug 3, 
     this.refreshRate = 60;
+    this.physX = PhysX();
     this.network = new Network(socket);
-    this.world = new World(socket.id);
-    this.server = new World();
+    this.world = new World(socket.id,PhysX);
+    //this.server = new World();
     this.inputs = new Inputs();
     this.render = new Render();
     this.startTime = Date.now();
