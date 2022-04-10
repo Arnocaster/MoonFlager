@@ -1,8 +1,8 @@
-import * as Entities from './collections/Entities'
-import * as Components from './components/'
+import * as Entities from './collections/Entities/index.mjs'
+import * as Components from './components/index.mjs'
 
 
-export default function entityFactory(world,type,param) {
+export default function entityFactory(world, physx, type,param) {
     const newEntity = {
       type : type,
       bufferPosition : [],
@@ -47,10 +47,9 @@ export default function entityFactory(world,type,param) {
     
     
     //Builder
-    if (Entities[type] !== undefined){
+    try {
       const EntityRecipe = Entities[type]();
       Object.keys(EntityRecipe).forEach(param=>{
-        
         //If it's not a component
         if(!EntityRecipe[type]){
           newEntity[param] = EntityRecipe[param];
@@ -87,7 +86,8 @@ export default function entityFactory(world,type,param) {
       //console.log('new :',newEntity);
       newEntity.addToWorld();
       return newEntity
+    } catch (err) {
+      console.error(err);
     }
-    console.error('Error : entity not builded');
    
 }

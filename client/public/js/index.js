@@ -22,7 +22,7 @@ class App {
 
   init(){
     if (this.network.started) {
-      console.log(this.network.started);
+      //console.log(this.network.started);
       setInterval(() => {
         this.update();
       }, (1000 / this.refreshRate));
@@ -49,7 +49,7 @@ class App {
 
 //!START HERE
 document.addEventListener('DOMContentLoaded', () => {
-  const socket = io('http://109.14.79.91:3003');
+  const socket = io('http://127.0.0.1:3003');
   socket.on('client_socket', (res) => {
     const app = new App(socket);
   });

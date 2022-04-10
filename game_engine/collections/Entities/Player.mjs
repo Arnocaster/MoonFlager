@@ -7,6 +7,7 @@ export function player() {
       drop: true
     },
     position: { random: true },
+    size: {r:5},
     move: {
       type: 'human',
       speed: 5,
@@ -15,15 +16,13 @@ export function player() {
     color: `rgb(${parseInt(Math.random() * 255)}, 
                ${parseInt(Math.random() * 255)},
                ${parseInt(Math.random() * 255)})`,
-    physx: {
-      position : 'x y z',
-      velocity : '???',
-      initial_velocity : '',
-      type: 'static || dynamic',
-      shape: 'sphere || box || custom',
-      shape_path : 'path to shape file',
-      material: '[staticfriction, dynamicfriction, restitution]',
-    },
+    physx : {
+    material : {x:0.5,y:0.5,z:0.5},
+    model : {
+      type : "dynamic",
+      shape: "sphere"
+    }
+  },
   render: (ctx, position, color) => {
       ctx.beginPath();
       ctx.lineWidth = 1;

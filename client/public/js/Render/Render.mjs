@@ -37,7 +37,7 @@ export default class render {
       //!Render each entities/object of the world
       if (world) {
         world.forEach(entity => {
-          entity.render(ctx, entity.position, entity.color);
+          entity.render(ctx, entity.position, entity.size, entity.color);
         });
       }
     } else {

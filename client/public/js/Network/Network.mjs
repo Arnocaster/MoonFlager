@@ -37,7 +37,6 @@ export default class Network {
         if (!this.started){
           this.initWorld++;
           (this.initWorld > 3) ? this.started = true : '';
-          console.log(this.initWorld,this.started);
         }
         //console.log(newWorld);
         this.bufferWorld = newWorld;

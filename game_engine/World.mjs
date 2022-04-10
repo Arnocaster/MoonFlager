@@ -9,18 +9,20 @@ export default class World {
     this.prediction = [];
     this.actionBuffer = [];
     this.serverRate = 0;
-    this.physx = new physicEngine(physX);
+    this.physx = physicEngine(physX);
+    console.log(this.world);
   }
+
   //!!! WORLD.PUSH IS NOT A FUNCTION, PB DE SCOPE RETURN,FONCTION.0
   createPlayer(socket, id) {
-    const player = entityFactory(this.world, 'player', { socket, id });
+    const player = entityFactory(this.world,this.physx, 'player', { socket, id });
     const flag = this.createEntity('flag');
     player.equip(player, flag);
     return player;
   }
 
   createEntity(type, id) {
-    const entity = entityFactory(this.world, type, { id });
+    const entity = entityFactory(this.world, this.physx, type, { id });
     return entity;
   }
 
@@ -66,7 +68,7 @@ export default class World {
     //!Approx, should be server rate => Need to find a solution
     const renderTs = now-100;
     let buffer = entity.bufferPosition;
-    console.log(buffer,buffer[0].x-buffer[buffer.length-1].x);
+    //console.log(buffer,buffer[0].x-buffer[buffer.length-1].x);
     if ((buffer[buffer.length-1].x-buffer[0].x !== 0
         || buffer[buffer.length-1].y-buffer[0].y !== 0 
         || buffer[buffer.length-1].angle-buffer[0].angle !== 0 )) {
@@ -83,11 +85,11 @@ export default class World {
       const t0 = buffer[0].ts;
       const t1 = buffer[buffer.length-1].ts;
       //
-      console.log('x0', x0, "+(x1-x0)", x1 - x0, "*(renderTs-t0)", renderTs - t0, "/(t1-t0)", t1 - t0);
+      //console.log('x0', x0, "+(x1-x0)", x1 - x0, "*(renderTs-t0)", renderTs - t0, "/(t1-t0)", t1 - t0);
         entity.position.angle = angle0 + (angle1-angle0) * (renderTs - t0) / (t1-t0);
         entity.position.x = x0 + (x1-x0) * (renderTs - t0) / (t1-t0);
         entity.position.y = y0 + (y1-y0) * (renderTs - t0) / (t1-t0);
-        console.log('Interpolated!!!!');
+        //console.log('Interpolated!!!!');
         //entity.bufferPosition.shift();
         return entity;
     } else {

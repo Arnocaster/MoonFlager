@@ -4,6 +4,13 @@ export function flag() {
     color : `rgb(${parseInt(Math.random() * 255)}, 
                 ${parseInt(Math.random() * 255)},
                 ${parseInt(Math.random() * 255)})`,
+    physx : {
+      material : {x:0.5,y:0.5,z:0.5},
+      model : {
+        type : "dynamic",
+        shape: "box"
+      }
+    },
     usage : (equipedEntity) =>{
       equipedEntity.drop(equipedEntity);
     },
