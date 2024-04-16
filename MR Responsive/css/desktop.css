@@ -1,0 +1,7 @@
+@media (min-width: 1050px) {
+  .content {
+    width: 100%;
+    margin : 1rem;
+    flex-direction: row;
+  }
+}
